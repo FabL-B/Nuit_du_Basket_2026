@@ -10,6 +10,12 @@ from matchs.models import Match, StatutMatch
 from phases.models import PhaseGlobale
 from planning.models import Creneau, Terrain, TypeTerrain
 from planning.services_pauses import _charger_pauses_actives, _sauter_si_dans_pause
+from planning.heuristiques import (
+    StatsPlanningEquipe,
+    penalite_match,
+    enregistrer_match,
+    calculer_metriques,
+)
 
 
 class ErreurGenerationPlanning(ValueError):
@@ -20,6 +26,7 @@ class ErreurGenerationPlanning(ValueError):
 class ResumePlanning:
     matchs_planifies: int
     creneaux_utilises: int
+    metriques: object | None = None
 
 
 def _datetime_debut_edition(phase_globale: PhaseGlobale) -> datetime:
@@ -142,6 +149,8 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
         raise ErreurGenerationPlanning("Aucun terrain actif pour cette édition.")
     nb_terrains = len(terrains)
 
+    stats_by_team: dict[int, StatsPlanningEquipe] = {}
+
     # Matchs à planifier : uniquement ceux sans créneau/terrain
     matchs = list(
         Match.objects.filter(phase_globale=phase_globale, statut=StatutMatch.A_PLANIFIER)
@@ -195,13 +204,12 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
 
             # choisir le meilleur candidat selon pénalités souples
             candidats.sort(
-                key=lambda m: _penalite_match(
-                    m,
+                key=lambda m: penalite_match(
+                    m.equipe_a_id,
+                    m.equipe_b_id,
                     slot_index=slot_index,
                     type_terrain=terrain.type_terrain,
-                    last_slot_played=last_slot_played,
-                    counts_in=counts_in,
-                    counts_out=counts_out,
+                    stats_by_team=stats_by_team,
                 )
             )
             choisi = candidats[0]
@@ -218,16 +226,13 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
             match.statut = StatutMatch.PLANIFIE
             match.save(update_fields=["creneau", "terrain", "statut", "modifie_le"])
 
-            # stats soft
-            last_slot_played[match.equipe_a_id] = slot_index
-            last_slot_played[match.equipe_b_id] = slot_index
-
-            if terrain.type_terrain == TypeTerrain.INTERIEUR:
-                counts_in[match.equipe_a_id] = counts_in.get(match.equipe_a_id, 0) + 1
-                counts_in[match.equipe_b_id] = counts_in.get(match.equipe_b_id, 0) + 1
-            else:
-                counts_out[match.equipe_a_id] = counts_out.get(match.equipe_a_id, 0) + 1
-                counts_out[match.equipe_b_id] = counts_out.get(match.equipe_b_id, 0) + 1
+            enregistrer_match(
+                match.equipe_a_id,
+                match.equipe_b_id,
+                slot_index=slot_index,
+                type_terrain=terrain.type_terrain,
+                stats_by_team=stats_by_team,
+            )
 
             restant.remove(match)
 
@@ -241,4 +246,5 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
         .count()
     )
 
-    return ResumePlanning(matchs_planifies=len(matchs), creneaux_utilises=used_slots)
+    metriques = calculer_metriques(stats_by_team, nb_matchs=len(matchs))
+    return ResumePlanning(matchs_planifies=len(matchs), creneaux_utilises=used_slots, metriques=metriques)
