@@ -9,6 +9,7 @@ from django.utils import timezone
 from matchs.models import Match, StatutMatch
 from phases.models import PhaseGlobale
 from planning.models import Creneau, Terrain, TypeTerrain
+from planning.services_pauses import _charger_pauses_actives, _sauter_si_dans_pause
 
 
 class ErreurGenerationPlanning(ValueError):
@@ -46,12 +47,16 @@ def _get_or_create_creneaux(phase_globale: PhaseGlobale, nb_minimum: int) -> lis
 
     start_dt = _datetime_debut_edition(phase_globale)
 
+    pauses = _charger_pauses_actives(edition)
+    start_dt = _sauter_si_dans_pause(start_dt, pauses)
+
     # index commence à 1 (plus lisible)
     next_index = existants[-1].index + 1 if existants else 1
     next_start = existants[-1].debut + timedelta(minutes=existants[-1].duree_minutes) if existants else start_dt
 
     a_creer = []
     while len(existants) + len(a_creer) < nb_minimum:
+        next_start = _sauter_si_dans_pause(next_start, pauses)
         a_creer.append(
             Creneau(
                 edition=edition,
