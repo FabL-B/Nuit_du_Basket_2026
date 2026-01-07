@@ -13,8 +13,12 @@ from groupes.services import generer_groupes_pour_sous_phase, ErreurGenerationGr
 def _setup_sous_phase():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.ROOKIE)
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sous_phase = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sous_phase = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     return edition, tournoi, sous_phase
 
 
@@ -32,8 +36,8 @@ def _creer_equipes(edition, tournoi, n: int):
 @pytest.mark.parametrize(
     "n, tailles_attendues",
     [
-        (8,  [4, 4]),
-        (9,  [4, 5]),
+        (8, [4, 4]),
+        (9, [4, 5]),
         (10, [5, 5]),
         (12, [4, 4, 4]),
         (13, [4, 4, 5]),

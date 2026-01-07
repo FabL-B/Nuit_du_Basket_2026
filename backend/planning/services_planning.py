@@ -59,7 +59,11 @@ def _get_or_create_creneaux(phase_globale: PhaseGlobale, nb_minimum: int) -> lis
 
     # index commence à 1 (plus lisible)
     next_index = existants[-1].index + 1 if existants else 1
-    next_start = existants[-1].debut + timedelta(minutes=existants[-1].duree_minutes) if existants else start_dt
+    next_start = (
+        existants[-1].debut + timedelta(minutes=existants[-1].duree_minutes)
+        if existants
+        else start_dt
+    )
 
     a_creer = []
     while len(existants) + len(a_creer) < nb_minimum:
@@ -143,7 +147,9 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
         )
 
     terrains = list(
-        Terrain.objects.filter(edition=phase_globale.edition, est_actif=True).order_by("ordre", "id")
+        Terrain.objects.filter(edition=phase_globale.edition, est_actif=True).order_by(
+            "ordre", "id"
+        )
     )
     if not terrains:
         raise ErreurGenerationPlanning("Aucun terrain actif pour cette édition.")
@@ -196,8 +202,10 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
 
             # candidats = matchs dont aucune équipe ne joue déjà sur ce créneau
             candidats = [
-                m for m in restant
-                if (m.equipe_a_id not in equipes_deja_prises) and (m.equipe_b_id not in equipes_deja_prises)
+                m
+                for m in restant
+                if (m.equipe_a_id not in equipes_deja_prises)
+                and (m.equipe_b_id not in equipes_deja_prises)
             ]
             if not candidats:
                 break
@@ -247,4 +255,6 @@ def generer_planning_phase_globale(phase_globale: PhaseGlobale) -> ResumePlannin
     )
 
     metriques = calculer_metriques(stats_by_team, nb_matchs=len(matchs))
-    return ResumePlanning(matchs_planifies=len(matchs), creneaux_utilises=used_slots, metriques=metriques)
+    return ResumePlanning(
+        matchs_planifies=len(matchs), creneaux_utilises=used_slots, metriques=metriques
+    )

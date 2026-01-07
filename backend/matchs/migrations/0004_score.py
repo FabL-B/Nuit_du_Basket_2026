@@ -8,22 +8,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('matchs', '0003_matchsheet'),
+        ("matchs", "0003_matchsheet"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Score',
+            name="Score",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('points_a', models.PositiveSmallIntegerField()),
-                ('points_b', models.PositiveSmallIntegerField()),
-                ('valide_le', models.DateTimeField(blank=True, null=True)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
-                ('match', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='score', to='matchs.match')),
-                ('valide_par', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='scores_valides', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("points_a", models.PositiveSmallIntegerField()),
+                ("points_b", models.PositiveSmallIntegerField()),
+                ("valide_le", models.DateTimeField(blank=True, null=True)),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
+                (
+                    "match",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="score",
+                        to="matchs.match",
+                    ),
+                ),
+                (
+                    "valide_par",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="scores_valides",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

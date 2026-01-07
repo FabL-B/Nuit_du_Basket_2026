@@ -49,7 +49,9 @@ class Equipe(models.Model):
         Règle métier: une équipe est liée à une édition ET un tournoi de cette même édition.
         """
         if self.tournoi_id and self.edition_id and self.tournoi.edition_id != self.edition_id:
-            raise ValidationError("Le tournoi choisi n'appartient pas à la même édition que l'équipe.")
+            raise ValidationError(
+                "Le tournoi choisi n'appartient pas à la même édition que l'équipe."
+            )
 
 
 class Joueur(models.Model):

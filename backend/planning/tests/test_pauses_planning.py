@@ -18,12 +18,16 @@ def test_pause_decale_les_creneaux_apres_debut_pause():
     # 6 créneaux
     base = timezone.make_aware(datetime(2026, 6, 20, 14, 0))
     for i in range(1, 7):
-        Creneau.objects.create(edition=edition, index=i, debut=base, duree_minutes=edition.duree_creneau_minutes)
+        Creneau.objects.create(
+            edition=edition, index=i, debut=base, duree_minutes=edition.duree_creneau_minutes
+        )
         base = base + timezone.timedelta(minutes=edition.duree_creneau_minutes)
 
     # pause à 15:00 pendant 60 min => le créneau index 5 (15:00) doit passer à 16:00
     pause_start = timezone.make_aware(datetime(2026, 6, 20, 15, 0))
-    PausePlanning.objects.create(edition=edition, nom="Concours shoot", debut=pause_start, duree_minutes=60)
+    PausePlanning.objects.create(
+        edition=edition, nom="Concours shoot", debut=pause_start, duree_minutes=60
+    )
 
     recalculer_debuts_creneaux_avec_pauses(edition)
 

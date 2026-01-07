@@ -13,8 +13,12 @@ from groupes.models import Groupe, GroupeEquipe
 def test_unique_code_groupe_par_sous_phase():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement="2026-06-20")
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.ROOKIE)
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sous_phase = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sous_phase = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
 
     Groupe.objects.create(sous_phase=sous_phase, code="A")
 
@@ -28,7 +32,9 @@ def test_groupe_equipe_refuse_mauvais_tournoi():
     tournoi_rookie = Tournoi.objects.create(edition=edition, code=CodeTournoi.ROOKIE)
     tournoi_loisir = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
     sous_phase_rookie = SousPhase.objects.create(
         phase_globale=phase, tournoi=tournoi_rookie, branche=BrancheSousPhase.AUCUNE
     )
@@ -48,7 +54,9 @@ def test_groupe_equipe_refuse_mauvaise_edition():
     tournoi_2026 = Tournoi.objects.create(edition=edition_2026, code=CodeTournoi.ROOKIE)
     tournoi_2027 = Tournoi.objects.create(edition=edition_2027, code=CodeTournoi.ROOKIE)
 
-    phase_2026 = PhaseGlobale.objects.create(edition=edition_2026, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
+    phase_2026 = PhaseGlobale.objects.create(
+        edition=edition_2026, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
     sous_phase_2026 = SousPhase.objects.create(
         phase_globale=phase_2026, tournoi=tournoi_2026, branche=BrancheSousPhase.AUCUNE
     )
@@ -64,8 +72,12 @@ def test_groupe_equipe_refuse_mauvaise_edition():
 def test_groupe_equipe_ok():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement="2026-06-20")
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.ROOKIE)
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sous_phase = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sous_phase = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
 
     groupe = Groupe.objects.create(sous_phase=sous_phase, code="A")
     equipe = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="Les Tigres")

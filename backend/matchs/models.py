@@ -97,7 +97,11 @@ class Match(models.Model):
         """
         erreurs = {}
 
-        if self.phase_globale_id and self.edition_id and self.phase_globale.edition_id != self.edition_id:
+        if (
+            self.phase_globale_id
+            and self.edition_id
+            and self.phase_globale.edition_id != self.edition_id
+        ):
             erreurs["phase_globale"] = "La phase globale n'appartient pas à cette édition."
 
         if self.sous_phase_id:
@@ -106,7 +110,11 @@ class Match(models.Model):
             if self.edition_id and self.sous_phase.phase_globale.edition_id != self.edition_id:
                 erreurs["sous_phase"] = "La sous-phase n'appartient pas à cette édition."
 
-        if self.groupe_id and self.sous_phase_id and self.groupe.sous_phase_id != self.sous_phase_id:
+        if (
+            self.groupe_id
+            and self.sous_phase_id
+            and self.groupe.sous_phase_id != self.sous_phase_id
+        ):
             erreurs["groupe"] = "Le groupe n'appartient pas à cette sous-phase."
 
         # équipes : édition + tournoi

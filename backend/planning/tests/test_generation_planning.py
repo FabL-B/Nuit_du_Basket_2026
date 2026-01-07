@@ -19,18 +19,28 @@ def test_planning_assigne_creneau_et_terrain_sans_collision():
 
     # 8 terrains (4 int, 4 ext)
     for i in range(4):
-        Terrain.objects.create(edition=edition, nom=f"Int {i+1}", type_terrain=TypeTerrain.INTERIEUR, ordre=i)
+        Terrain.objects.create(
+            edition=edition, nom=f"Int {i+1}", type_terrain=TypeTerrain.INTERIEUR, ordre=i
+        )
     for i in range(4):
-        Terrain.objects.create(edition=edition, nom=f"Ext {i+1}", type_terrain=TypeTerrain.EXTERIEUR, ordre=10+i)
+        Terrain.objects.create(
+            edition=edition, nom=f"Ext {i+1}", type_terrain=TypeTerrain.EXTERIEUR, ordre=10 + i
+        )
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
     # 8 équipes => on crée 8 matchs "artificiels" (pas round robin complet) pour tester collisions
     equipes = []
     for i in range(8):
-        e = Equipe.objects.create(edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE)
+        e = Equipe.objects.create(
+            edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE
+        )
         equipes.append(e)
         GroupeEquipe.objects.create(groupe=groupe, equipe=e)
 
@@ -77,18 +87,28 @@ def test_planning_cree_autant_de_creneaux_que_necessaire():
 
     # 8 terrains
     for i in range(4):
-        Terrain.objects.create(edition=edition, nom=f"Int {i+1}", type_terrain=TypeTerrain.INTERIEUR, ordre=i)
+        Terrain.objects.create(
+            edition=edition, nom=f"Int {i+1}", type_terrain=TypeTerrain.INTERIEUR, ordre=i
+        )
     for i in range(4):
-        Terrain.objects.create(edition=edition, nom=f"Ext {i+1}", type_terrain=TypeTerrain.EXTERIEUR, ordre=10+i)
+        Terrain.objects.create(
+            edition=edition, nom=f"Ext {i+1}", type_terrain=TypeTerrain.EXTERIEUR, ordre=10 + i
+        )
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
     # 16 équipes => 8 matchs par "tour" si on les paire, on crée 16 matchs => 2 créneaux attendus
     equipes = []
     for i in range(32):
-        e = Equipe.objects.create(edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE)
+        e = Equipe.objects.create(
+            edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE
+        )
         equipes.append(e)
 
     # On affecte seulement 32 équipes au groupe (pas réaliste mais suffisant pour test planning)

@@ -17,7 +17,12 @@ def saisir_score(match: Match, points_a: int, points_b: int) -> Score:
     Crée ou met à jour un score non validé.
     Interdit si match terminé/forfait, ou si score déjà validé.
     """
-    if match.statut in {StatutMatch.TERMINE, StatutMatch.FORFAIT_A, StatutMatch.FORFAIT_B, StatutMatch.DOUBLE_FORFAIT}:
+    if match.statut in {
+        StatutMatch.TERMINE,
+        StatutMatch.FORFAIT_A,
+        StatutMatch.FORFAIT_B,
+        StatutMatch.DOUBLE_FORFAIT,
+    }:
         raise ErreurScore("Impossible de saisir un score sur un match terminé ou forfait.")
 
     score, created = Score.objects.get_or_create(
@@ -64,6 +69,7 @@ def valider_score(match, utilisateur) -> Score:
 
     # 3) Recalcul classement (après persistance du statut TERMINE)
     from classements.services import recalculer_classements_pour_groupe
+
     recalculer_classements_pour_groupe(match.groupe)
 
     return score

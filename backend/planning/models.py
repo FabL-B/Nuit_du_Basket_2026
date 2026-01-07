@@ -18,7 +18,9 @@ class Terrain(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["edition", "nom"], name="unique_terrain_par_edition_nom")
+            models.UniqueConstraint(
+                fields=["edition", "nom"], name="unique_terrain_par_edition_nom"
+            )
         ]
 
     def __str__(self) -> str:
@@ -34,7 +36,9 @@ class Creneau(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["edition", "index"], name="unique_creneau_par_edition_index")
+            models.UniqueConstraint(
+                fields=["edition", "index"], name="unique_creneau_par_edition_index"
+            )
         ]
 
     def __str__(self) -> str:
@@ -42,7 +46,9 @@ class Creneau(models.Model):
 
 
 class PausePlanning(models.Model):
-    edition = models.ForeignKey("core.Edition", on_delete=models.PROTECT, related_name="pauses_planning")
+    edition = models.ForeignKey(
+        "core.Edition", on_delete=models.PROTECT, related_name="pauses_planning"
+    )
     nom = models.CharField(max_length=80)
     debut = models.DateTimeField()
     duree_minutes = models.PositiveSmallIntegerField()
@@ -51,7 +57,9 @@ class PausePlanning(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["edition", "debut"], name="unique_pause_par_edition_debut"),
+            models.UniqueConstraint(
+                fields=["edition", "debut"], name="unique_pause_par_edition_debut"
+            ),
         ]
 
     def clean(self) -> None:

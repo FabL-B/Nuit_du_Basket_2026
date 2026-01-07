@@ -59,9 +59,7 @@ def generer_matchs_pour_phase_globale(phase_globale: PhaseGlobale) -> ResumeGene
         )
 
         if len(equipe_ids) < 2:
-            raise ErreurGenerationMatchs(
-                f"Groupe {groupe.code} invalide : moins de 2 équipes."
-            )
+            raise ErreurGenerationMatchs(f"Groupe {groupe.code} invalide : moins de 2 équipes.")
 
         nb_groupes += 1
 

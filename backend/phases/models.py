@@ -28,7 +28,9 @@ class PhaseGlobale(models.Model):
 
     type_phase = models.CharField(max_length=20, choices=TypePhaseGlobale.choices)
     sequence = models.PositiveSmallIntegerField(default=1)
-    statut = models.CharField(max_length=20, choices=StatutPhase.choices, default=StatutPhase.BROUILLON)
+    statut = models.CharField(
+        max_length=20, choices=StatutPhase.choices, default=StatutPhase.BROUILLON
+    )
 
     cree_le = models.DateTimeField(auto_now_add=True)
     modifie_le = models.DateTimeField(auto_now=True)
@@ -59,8 +61,12 @@ class SousPhase(models.Model):
         related_name="sous_phases",
     )
 
-    branche = models.CharField(max_length=20, choices=BrancheSousPhase.choices, default=BrancheSousPhase.AUCUNE)
-    statut = models.CharField(max_length=20, choices=StatutPhase.choices, default=StatutPhase.BROUILLON)
+    branche = models.CharField(
+        max_length=20, choices=BrancheSousPhase.choices, default=BrancheSousPhase.AUCUNE
+    )
+    statut = models.CharField(
+        max_length=20, choices=StatutPhase.choices, default=StatutPhase.BROUILLON
+    )
 
     cree_le = models.DateTimeField(auto_now_add=True)
     modifie_le = models.DateTimeField(auto_now=True)

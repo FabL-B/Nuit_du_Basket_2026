@@ -9,48 +9,92 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
-        ('tournois', '0001_initial'),
+        ("core", "0001_initial"),
+        ("tournois", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Equipe',
+            name="Equipe",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=80)),
-                ('nom_club', models.CharField(blank=True, max_length=120)),
-                ('statut', models.CharField(choices=[('BROUILLON', 'Brouillon'), ('VALIDEE', 'Validée'), ('ARCHIVEE', 'Archivée')], default='BROUILLON', max_length=20)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
-                ('edition', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='equipes', to='core.edition')),
-                ('tournoi', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='equipes', to='tournois.tournoi')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("nom", models.CharField(max_length=80)),
+                ("nom_club", models.CharField(blank=True, max_length=120)),
+                (
+                    "statut",
+                    models.CharField(
+                        choices=[
+                            ("BROUILLON", "Brouillon"),
+                            ("VALIDEE", "Validée"),
+                            ("ARCHIVEE", "Archivée"),
+                        ],
+                        default="BROUILLON",
+                        max_length=20,
+                    ),
+                ),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
+                (
+                    "edition",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="equipes",
+                        to="core.edition",
+                    ),
+                ),
+                (
+                    "tournoi",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="equipes",
+                        to="tournois.tournoi",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Équipe',
-                'verbose_name_plural': 'Équipes',
+                "verbose_name": "Équipe",
+                "verbose_name_plural": "Équipes",
             },
         ),
         migrations.CreateModel(
-            name='Joueur',
+            name="Joueur",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('prenom', models.CharField(max_length=60)),
-                ('nom', models.CharField(max_length=60)),
-                ('date_naissance', models.DateField(blank=True, null=True)),
-                ('email', models.EmailField(blank=True, max_length=254)),
-                ('telephone', models.CharField(blank=True, max_length=32)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
-                ('equipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='joueurs', to='inscriptions.equipe')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("prenom", models.CharField(max_length=60)),
+                ("nom", models.CharField(max_length=60)),
+                ("date_naissance", models.DateField(blank=True, null=True)),
+                ("email", models.EmailField(blank=True, max_length=254)),
+                ("telephone", models.CharField(blank=True, max_length=32)),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
+                (
+                    "equipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="joueurs",
+                        to="inscriptions.equipe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Joueur',
-                'verbose_name_plural': 'Joueurs',
+                "verbose_name": "Joueur",
+                "verbose_name_plural": "Joueurs",
             },
         ),
         migrations.AddConstraint(
-            model_name='equipe',
-            constraint=models.UniqueConstraint(fields=('edition', 'nom'), name='unique_nom_equipe_par_edition'),
+            model_name="equipe",
+            constraint=models.UniqueConstraint(
+                fields=("edition", "nom"), name="unique_nom_equipe_par_edition"
+            ),
         ),
     ]

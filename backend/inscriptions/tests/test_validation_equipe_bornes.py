@@ -43,8 +43,9 @@ def test_valider_equipe_bornes_par_tournoi(code_tournoi, nb_joueurs, attendu_ok)
             # garantit >= 15 ans au 20/06/2026
             date_naissance = date(2000, 1, 1)
 
-        Joueur.objects.create(equipe=equipe, prenom=f"P{i}", nom="Test", date_naissance=date_naissance)
-
+        Joueur.objects.create(
+            equipe=equipe, prenom=f"P{i}", nom="Test", date_naissance=date_naissance
+        )
 
     if attendu_ok:
         equipe_validee = valider_equipe(equipe)

@@ -18,9 +18,7 @@ def _debut_edition_aware(edition) -> datetime:
 
 
 def _charger_pauses_actives(edition) -> list[tuple[datetime, datetime]]:
-    pauses = list(
-        PausePlanning.objects.filter(edition=edition, est_active=True).order_by("debut")
-    )
+    pauses = list(PausePlanning.objects.filter(edition=edition, est_active=True).order_by("debut"))
     intervals: list[tuple[datetime, datetime]] = []
     for p in pauses:
         intervals.append((p.debut, p.debut + timedelta(minutes=p.duree_minutes)))

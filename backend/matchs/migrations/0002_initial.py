@@ -9,61 +9,103 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
-        ('groupes', '0001_initial'),
-        ('inscriptions', '0001_initial'),
-        ('matchs', '0001_initial'),
-        ('phases', '0001_initial'),
-        ('planning', '0001_initial'),
+        ("core", "0001_initial"),
+        ("groupes", "0001_initial"),
+        ("inscriptions", "0001_initial"),
+        ("matchs", "0001_initial"),
+        ("phases", "0001_initial"),
+        ("planning", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='match',
-            name='creneau',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='matchs', to='planning.creneau'),
+            model_name="match",
+            name="creneau",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="matchs",
+                to="planning.creneau",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='edition',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='matchs', to='core.edition'),
+            model_name="match",
+            name="edition",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="matchs",
+                to="core.edition",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='equipe_a',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='matchs_comme_a', to='inscriptions.equipe'),
+            model_name="match",
+            name="equipe_a",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="matchs_comme_a",
+                to="inscriptions.equipe",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='equipe_b',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='matchs_comme_b', to='inscriptions.equipe'),
+            model_name="match",
+            name="equipe_b",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="matchs_comme_b",
+                to="inscriptions.equipe",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='groupe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='matchs', to='groupes.groupe'),
+            model_name="match",
+            name="groupe",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="matchs",
+                to="groupes.groupe",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='phase_globale',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='matchs', to='phases.phaseglobale'),
+            model_name="match",
+            name="phase_globale",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="matchs",
+                to="phases.phaseglobale",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='sous_phase',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='matchs', to='phases.sousphase'),
+            model_name="match",
+            name="sous_phase",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="matchs",
+                to="phases.sousphase",
+            ),
         ),
         migrations.AddField(
-            model_name='match',
-            name='terrain',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='matchs', to='planning.terrain'),
+            model_name="match",
+            name="terrain",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="matchs",
+                to="planning.terrain",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='match',
-            constraint=models.CheckConstraint(condition=models.Q(('equipe_a', models.F('equipe_b')), _negated=True), name='match_equipes_differentes'),
+            model_name="match",
+            constraint=models.CheckConstraint(
+                condition=models.Q(("equipe_a", models.F("equipe_b")), _negated=True),
+                name="match_equipes_differentes",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='match',
-            constraint=models.UniqueConstraint(fields=('groupe', 'equipe_a', 'equipe_b'), name='unique_match_par_groupe_et_paire_ordonne'),
+            model_name="match",
+            constraint=models.UniqueConstraint(
+                fields=("groupe", "equipe_a", "equipe_b"),
+                name="unique_match_par_groupe_et_paire_ordonne",
+            ),
         ),
     ]

@@ -50,7 +50,9 @@ def _verifier_age_rookie(equipe: Equipe) -> None:
     if isinstance(date_ref, str):
         date_ref = parse_date(date_ref)
     if not isinstance(date_ref, date):
-        raise ErreurValidationEquipe("Date d'évènement invalide pour calculer l'âge (Edition.date_evenement).")
+        raise ErreurValidationEquipe(
+            "Date d'évènement invalide pour calculer l'âge (Edition.date_evenement)."
+        )
 
     # Ici, on exige une date de naissance renseignée pour pouvoir valider.
     joueurs_sans_date = equipe.joueurs.filter(date_naissance__isnull=True)
@@ -139,7 +141,9 @@ def valider_equipe(equipe: Equipe) -> Equipe:
 
 
 @transaction.atomic
-def valider_deux_equipes_pour_passer_a_12(equipe_1: Equipe, equipe_2: Equipe) -> tuple[Equipe, Equipe]:
+def valider_deux_equipes_pour_passer_a_12(
+    equipe_1: Equipe, equipe_2: Equipe
+) -> tuple[Equipe, Equipe]:
     """
     Permet de passer de 10 -> 12 équipes validées sans état intermédiaire à 11.
     Préconditions :
@@ -151,7 +155,9 @@ def valider_deux_equipes_pour_passer_a_12(equipe_1: Equipe, equipe_2: Equipe) ->
         raise ErreurValidationEquipe("Impossible de valider deux fois la même équipe.")
 
     if equipe_1.edition_id != equipe_2.edition_id or equipe_1.tournoi_id != equipe_2.tournoi_id:
-        raise ErreurValidationEquipe("Les deux équipes doivent appartenir au même tournoi et à la même édition.")
+        raise ErreurValidationEquipe(
+            "Les deux équipes doivent appartenir au même tournoi et à la même édition."
+        )
 
     if equipe_1.statut == StatutEquipe.VALIDEE or equipe_2.statut == StatutEquipe.VALIDEE:
         raise ErreurValidationEquipe("Les deux équipes doivent être en brouillon avant validation.")

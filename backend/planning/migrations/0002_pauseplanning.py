@@ -7,24 +7,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0001_initial'),
-        ('planning', '0001_initial'),
+        ("core", "0001_initial"),
+        ("planning", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PausePlanning',
+            name="PausePlanning",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=80)),
-                ('debut', models.DateTimeField()),
-                ('duree_minutes', models.PositiveSmallIntegerField()),
-                ('est_active', models.BooleanField(default=True)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('edition', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='pauses_planning', to='core.edition')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("nom", models.CharField(max_length=80)),
+                ("debut", models.DateTimeField()),
+                ("duree_minutes", models.PositiveSmallIntegerField()),
+                ("est_active", models.BooleanField(default=True)),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                (
+                    "edition",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="pauses_planning",
+                        to="core.edition",
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('edition', 'debut'), name='unique_pause_par_edition_debut')],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("edition", "debut"), name="unique_pause_par_edition_debut"
+                    )
+                ],
             },
         ),
     ]

@@ -7,17 +7,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('matchs', '0002_initial'),
+        ("matchs", "0002_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MatchSheet',
+            name="MatchSheet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sheet_code', models.CharField(editable=False, max_length=36, unique=True)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('match', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='feuille', to='matchs.match')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("sheet_code", models.CharField(editable=False, max_length=36, unique=True)),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                (
+                    "match",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="feuille",
+                        to="matchs.match",
+                    ),
+                ),
             ],
         ),
     ]

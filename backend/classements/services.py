@@ -88,7 +88,9 @@ def recalculer_classements_pour_groupe(groupe) -> None:
       * TERMINE avec score validé
       * FORFAIT_* / DOUBLE_FORFAIT
     """
-    equipe_ids = list(GroupeEquipe.objects.filter(groupe=groupe).values_list("equipe_id", flat=True))
+    equipe_ids = list(
+        GroupeEquipe.objects.filter(groupe=groupe).values_list("equipe_id", flat=True)
+    )
     if not equipe_ids:
         return
 
@@ -133,7 +135,6 @@ def recalculer_classements_pour_groupe(groupe) -> None:
         else:  # DOUBLE_FORFAIT
             stats[a].joues += 1
             stats[b].joues += 1
-
 
     # Remplacement complet : pas de risques d’incréments cumulés
     Classement.objects.filter(groupe=groupe).delete()

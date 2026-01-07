@@ -9,49 +9,129 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
-        ('tournois', '0001_initial'),
+        ("core", "0001_initial"),
+        ("tournois", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PhaseGlobale',
+            name="PhaseGlobale",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type_phase', models.CharField(choices=[('PHASE_1', 'Phase 1'), ('PHASE_2', 'Phase 2'), ('FINALE', 'Finale')], max_length=20)),
-                ('sequence', models.PositiveSmallIntegerField(default=1)),
-                ('statut', models.CharField(choices=[('BROUILLON', 'Brouillon'), ('OUVERTE', 'Ouverte'), ('CLOTUREE', 'Clôturée')], default='BROUILLON', max_length=20)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
-                ('edition', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='phases_globales', to='core.edition')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "type_phase",
+                    models.CharField(
+                        choices=[
+                            ("PHASE_1", "Phase 1"),
+                            ("PHASE_2", "Phase 2"),
+                            ("FINALE", "Finale"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("sequence", models.PositiveSmallIntegerField(default=1)),
+                (
+                    "statut",
+                    models.CharField(
+                        choices=[
+                            ("BROUILLON", "Brouillon"),
+                            ("OUVERTE", "Ouverte"),
+                            ("CLOTUREE", "Clôturée"),
+                        ],
+                        default="BROUILLON",
+                        max_length=20,
+                    ),
+                ),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
+                (
+                    "edition",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="phases_globales",
+                        to="core.edition",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Phase globale',
-                'verbose_name_plural': 'Phases globales',
+                "verbose_name": "Phase globale",
+                "verbose_name_plural": "Phases globales",
             },
         ),
         migrations.CreateModel(
-            name='SousPhase',
+            name="SousPhase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('branche', models.CharField(choices=[('AUCUNE', 'Aucune'), ('CHALLENGE', 'Challenge'), ('CONSOLANTE', 'Consolante')], default='AUCUNE', max_length=20)),
-                ('statut', models.CharField(choices=[('BROUILLON', 'Brouillon'), ('OUVERTE', 'Ouverte'), ('CLOTUREE', 'Clôturée')], default='BROUILLON', max_length=20)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
-                ('phase_globale', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='sous_phases', to='phases.phaseglobale')),
-                ('tournoi', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='sous_phases', to='tournois.tournoi')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "branche",
+                    models.CharField(
+                        choices=[
+                            ("AUCUNE", "Aucune"),
+                            ("CHALLENGE", "Challenge"),
+                            ("CONSOLANTE", "Consolante"),
+                        ],
+                        default="AUCUNE",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "statut",
+                    models.CharField(
+                        choices=[
+                            ("BROUILLON", "Brouillon"),
+                            ("OUVERTE", "Ouverte"),
+                            ("CLOTUREE", "Clôturée"),
+                        ],
+                        default="BROUILLON",
+                        max_length=20,
+                    ),
+                ),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
+                (
+                    "phase_globale",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="sous_phases",
+                        to="phases.phaseglobale",
+                    ),
+                ),
+                (
+                    "tournoi",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="sous_phases",
+                        to="tournois.tournoi",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Sous-phase',
-                'verbose_name_plural': 'Sous-phases',
+                "verbose_name": "Sous-phase",
+                "verbose_name_plural": "Sous-phases",
             },
         ),
         migrations.AddConstraint(
-            model_name='phaseglobale',
-            constraint=models.UniqueConstraint(fields=('edition', 'type_phase', 'sequence'), name='unique_phase_globale_par_edition_type_sequence'),
+            model_name="phaseglobale",
+            constraint=models.UniqueConstraint(
+                fields=("edition", "type_phase", "sequence"),
+                name="unique_phase_globale_par_edition_type_sequence",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='sousphase',
-            constraint=models.UniqueConstraint(fields=('phase_globale', 'tournoi', 'branche'), name='unique_sous_phase_par_phase_globale_tournoi_branche'),
+            model_name="sousphase",
+            constraint=models.UniqueConstraint(
+                fields=("phase_globale", "tournoi", "branche"),
+                name="unique_sous_phase_par_phase_globale_tournoi_branche",
+            ),
         ),
     ]

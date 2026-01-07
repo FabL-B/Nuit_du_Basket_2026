@@ -7,17 +7,35 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Match',
+            name="Match",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('statut', models.CharField(choices=[('A_PLANIFIER', 'À planifier'), ('PLANIFIE', 'Planifié'), ('TERMINE', 'Terminé'), ('FORFAIT_A', 'Forfait équipe A'), ('FORFAIT_B', 'Forfait équipe B'), ('DOUBLE_FORFAIT', 'Double forfait')], default='A_PLANIFIER', max_length=20)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "statut",
+                    models.CharField(
+                        choices=[
+                            ("A_PLANIFIER", "À planifier"),
+                            ("PLANIFIE", "Planifié"),
+                            ("TERMINE", "Terminé"),
+                            ("FORFAIT_A", "Forfait équipe A"),
+                            ("FORFAIT_B", "Forfait équipe B"),
+                            ("DOUBLE_FORFAIT", "Double forfait"),
+                        ],
+                        default="A_PLANIFIER",
+                        max_length=20,
+                    ),
+                ),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

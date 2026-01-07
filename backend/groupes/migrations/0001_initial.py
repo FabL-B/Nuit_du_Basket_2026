@@ -9,49 +9,88 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('inscriptions', '0001_initial'),
-        ('phases', '0001_initial'),
+        ("inscriptions", "0001_initial"),
+        ("phases", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Groupe',
+            name="Groupe",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=16)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('modifie_le', models.DateTimeField(auto_now=True)),
-                ('sous_phase', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='groupes', to='phases.sousphase')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("code", models.CharField(max_length=16)),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                ("modifie_le", models.DateTimeField(auto_now=True)),
+                (
+                    "sous_phase",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="groupes",
+                        to="phases.sousphase",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Groupe',
-                'verbose_name_plural': 'Groupes',
+                "verbose_name": "Groupe",
+                "verbose_name_plural": "Groupes",
             },
         ),
         migrations.CreateModel(
-            name='GroupeEquipe',
+            name="GroupeEquipe",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('seed', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('cree_le', models.DateTimeField(auto_now_add=True)),
-                ('equipe', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='groupes', to='inscriptions.equipe')),
-                ('groupe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='equipes', to='groupes.groupe')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("seed", models.PositiveSmallIntegerField(blank=True, null=True)),
+                ("cree_le", models.DateTimeField(auto_now_add=True)),
+                (
+                    "equipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="groupes",
+                        to="inscriptions.equipe",
+                    ),
+                ),
+                (
+                    "groupe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="equipes",
+                        to="groupes.groupe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Équipe du groupe',
-                'verbose_name_plural': 'Équipes du groupe',
+                "verbose_name": "Équipe du groupe",
+                "verbose_name_plural": "Équipes du groupe",
             },
         ),
         migrations.AddConstraint(
-            model_name='groupe',
-            constraint=models.UniqueConstraint(fields=('sous_phase', 'code'), name='unique_code_groupe_par_sous_phase'),
+            model_name="groupe",
+            constraint=models.UniqueConstraint(
+                fields=("sous_phase", "code"), name="unique_code_groupe_par_sous_phase"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='groupeequipe',
-            constraint=models.UniqueConstraint(fields=('groupe', 'equipe'), name='unique_equipe_par_groupe'),
+            model_name="groupeequipe",
+            constraint=models.UniqueConstraint(
+                fields=("groupe", "equipe"), name="unique_equipe_par_groupe"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='groupeequipe',
-            constraint=models.UniqueConstraint(condition=models.Q(('seed__isnull', False)), fields=('groupe', 'seed'), name='unique_seed_par_groupe_si_renseigne'),
+            model_name="groupeequipe",
+            constraint=models.UniqueConstraint(
+                condition=models.Q(("seed__isnull", False)),
+                fields=("groupe", "seed"),
+                name="unique_seed_par_groupe_si_renseigne",
+            ),
         ),
     ]

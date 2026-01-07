@@ -28,9 +28,7 @@ def _tournois_attendus_pour_edition(phase_globale: PhaseGlobale) -> list[Tournoi
     Règle : une édition doit contenir les 3 tournois fixes.
     On échoue explicitement si ce n'est pas le cas.
     """
-    tournois = list(
-        Tournoi.objects.filter(edition=phase_globale.edition).order_by("code")
-    )
+    tournois = list(Tournoi.objects.filter(edition=phase_globale.edition).order_by("code"))
     codes = {t.code for t in tournois}
     attendus = {CodeTournoi.ROOKIE, CodeTournoi.LOISIR, CodeTournoi.COMPETITEUR}
 

@@ -10,7 +10,9 @@ class ErreurSwapGroupes(ValueError):
 
 
 @transaction.atomic
-def swap_equipes_entre_groupes(groupe_equipe_a: GroupeEquipe, groupe_equipe_b: GroupeEquipe) -> None:
+def swap_equipes_entre_groupes(
+    groupe_equipe_a: GroupeEquipe, groupe_equipe_b: GroupeEquipe
+) -> None:
     """
     Interchange deux affectations (équipe A dans groupe A) et (équipe B dans groupe B).
 
@@ -26,7 +28,9 @@ def swap_equipes_entre_groupes(groupe_equipe_a: GroupeEquipe, groupe_equipe_b: G
     groupe_b = groupe_equipe_b.groupe
 
     if groupe_a.sous_phase_id != groupe_b.sous_phase_id:
-        raise ErreurSwapGroupes("Interchange interdit : les groupes ne sont pas dans la même sous-phase.")
+        raise ErreurSwapGroupes(
+            "Interchange interdit : les groupes ne sont pas dans la même sous-phase."
+        )
 
     equipe_a = groupe_equipe_a.equipe
     equipe_b = groupe_equipe_b.equipe
@@ -43,7 +47,10 @@ def swap_equipes_entre_groupes(groupe_equipe_a: GroupeEquipe, groupe_equipe_b: G
 
     # Swap : on échange les équipes entre les deux lignes
     # On utilise update_fields pour rester minimal.
-    groupe_equipe_a.equipe_id, groupe_equipe_b.equipe_id = groupe_equipe_b.equipe_id, groupe_equipe_a.equipe_id
+    groupe_equipe_a.equipe_id, groupe_equipe_b.equipe_id = (
+        groupe_equipe_b.equipe_id,
+        groupe_equipe_a.equipe_id,
+    )
 
     # full_clean() pour faire appliquer la validation modèle (règle tournoi/édition)
     groupe_equipe_a.full_clean()

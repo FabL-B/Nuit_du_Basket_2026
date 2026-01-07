@@ -90,7 +90,9 @@ def enregistrer_match(
             st.matchs_exterieur += 1
 
 
-def calculer_metriques(stats_by_team: dict[int, StatsPlanningEquipe], nb_matchs: int) -> MetriquesPlanning:
+def calculer_metriques(
+    stats_by_team: dict[int, StatsPlanningEquipe], nb_matchs: int
+) -> MetriquesPlanning:
     nb_equipes = len(stats_by_team)
     b2b = sum(st.enchainements_1 for st in stats_by_team.values())
     quasi = sum(st.enchainements_2 for st in stats_by_team.values())
