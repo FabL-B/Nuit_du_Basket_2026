@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "phases",
     "inscriptions",
     "groupes",
-    "matchs",
+    "matchs.apps.MatchsConfig",
     "planning",
 ]
 

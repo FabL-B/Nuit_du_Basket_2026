@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -127,4 +129,19 @@ class Match(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+        return super().save(*args, **kwargs)
+
+
+class MatchSheet(models.Model):
+    match = models.OneToOneField(
+        "matchs.Match",
+        on_delete=models.CASCADE,
+        related_name="feuille",
+    )
+    sheet_code = models.CharField(max_length=36, unique=True, editable=False)
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.sheet_code:
+            self.sheet_code = str(uuid.uuid4())
         return super().save(*args, **kwargs)
