@@ -1,0 +1,42 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ===== Virtual env =====
+.venv/
+venv/
+env/
+
+# ===== Django =====
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# ===== Migrations (optionnel) =====
+# Décommente si tu veux ignorer les migrations locales
+# */migrations/000*.py
+# */migrations/__pycache__/
+
+# ===== Tests =====
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== IDE =====
+.vscode/
+.idea/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Frontend (prévu plus tard) =====
+node_modules/
+dist/
+build/
+
+# ===== Secrets =====
+.env
+.env.*
