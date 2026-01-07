@@ -2,6 +2,8 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.conf import settings
+from django.utils import timezone
 
 
 class StatutMatch(models.TextChoices):
@@ -145,3 +147,36 @@ class MatchSheet(models.Model):
         if not self.sheet_code:
             self.sheet_code = str(uuid.uuid4())
         return super().save(*args, **kwargs)
+
+
+class Score(models.Model):
+    match = models.OneToOneField(
+        "matchs.Match",
+        on_delete=models.CASCADE,
+        related_name="score",
+    )
+    points_a = models.PositiveSmallIntegerField()
+    points_b = models.PositiveSmallIntegerField()
+
+    valide_le = models.DateTimeField(null=True, blank=True)
+    valide_par = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="scores_valides",
+    )
+
+    cree_le = models.DateTimeField(auto_now_add=True)
+    modifie_le = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        # verrouillage : score validé => non modifiable
+        if self.pk:
+            ancien = Score.objects.filter(pk=self.pk).only("valide_le").first()
+            if ancien and ancien.valide_le is not None:
+                raise ValidationError({"valide_le": "Score déjà validé : modification interdite."})
+
+        # Si valide_le est rempli, valide_par doit être rempli
+        if self.valide_le is not None and self.valide_par_id is None:
+            raise ValidationError({"valide_par": "L'utilisateur validant est obligatoire."})
