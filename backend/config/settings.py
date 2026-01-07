@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "groupes",
     "matchs.apps.MatchsConfig",
     "planning",
+    "classements",
 ]
 
 MIDDLEWARE = [

@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from matchs.models import Match, Score, StatutMatch
+from classements.services import recalculer_classements_pour_groupe
 
 
 class ErreurScore(ValueError):
@@ -33,13 +34,13 @@ def saisir_score(match: Match, points_a: int, points_b: int) -> Score:
 
 
 @transaction.atomic
-def valider_score(match: Match, utilisateur) -> Score:
+def valider_score(match, utilisateur) -> Score:
     """
     Valide le score existant du match.
-    Règles :
-    - score doit exister
-    - match ne doit pas être forfait
-    - passe le match en TERMINE
+    IMPORTANT : l'ordre est contractuel :
+    1) valider le Score (valide_le + valide_par)
+    2) passer le Match en TERMINE
+    3) recalculer le classement
     """
     if match.statut in {StatutMatch.FORFAIT_A, StatutMatch.FORFAIT_B, StatutMatch.DOUBLE_FORFAIT}:
         raise ErreurScore("Impossible de valider un score sur un match forfait.")
@@ -52,11 +53,17 @@ def valider_score(match: Match, utilisateur) -> Score:
     if score.valide_le is not None:
         raise ErreurScore("Score déjà validé.")
 
+    # 1) Valider le score
     score.valide_le = timezone.now()
     score.valide_par = utilisateur
     score.save(update_fields=["valide_le", "valide_par", "modifie_le"])
 
+    # 2) Terminer le match
     match.statut = StatutMatch.TERMINE
     match.save(update_fields=["statut", "modifie_le"])
+
+    # 3) Recalcul classement (après persistance du statut TERMINE)
+    from classements.services import recalculer_classements_pour_groupe
+    recalculer_classements_pour_groupe(match.groupe)
 
     return score
