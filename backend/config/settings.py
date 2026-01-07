@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "phases",
     "inscriptions",
     "groupes",
+    "matchs",
+    "planning",
 ]
 
 MIDDLEWARE = [
