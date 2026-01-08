@@ -21,6 +21,9 @@ class Classement(models.Model):
     points_classement = models.SmallIntegerField(
         default=0
     )  # Victoire=3, Egalité=2, Défaite=1, Forfait=0
+    rang_manuel = models.PositiveSmallIntegerField(null=True, blank=True)
+    note_admin = models.CharField(max_length=255, blank=True)
+
     maj_le = models.DateTimeField(auto_now=True)
 
     class Meta:
