@@ -9,6 +9,10 @@ from api_admin.serializers.phases import PhaseGlobaleSerializer
 from phases.services_cloture import cloturer_phase_globale, ErreurCloturePhase
 from phases.services_phase2 import previsualiser_phase2_depuis_phase1, ErreurGenerationPhase2
 from matchs.services_generation import generer_matchs_pour_phase_globale, ErreurGenerationMatchs
+from planning.services_planning import (
+    generer_planning_phase_globale,
+    ErreurGenerationPlanning,
+)
 
 
 class PhaseGlobaleViewSet(viewsets.ModelViewSet):
@@ -68,6 +72,25 @@ class PhaseGlobaleViewSet(viewsets.ModelViewSet):
                 "phase_id": phase.id,
                 "matchs_crees": getattr(resume, "matchs_crees", None),
                 "detail": "Génération des matchs terminée.",
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="generer-planning")
+    def generer_planning(self, request, pk=None):
+        phase = self.get_object()
+
+        try:
+            resume = generer_planning_phase_globale(phase)
+        except ErreurGenerationPlanning as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "phase_id": phase.id,
+                "matchs_planifies": resume.matchs_planifies,
+                "creneaux_crees": resume.creneaux_utilises,
+                "detail": "Planning généré avec succès.",
             },
             status=status.HTTP_200_OK,
         )
