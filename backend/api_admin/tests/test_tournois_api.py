@@ -24,7 +24,11 @@ def test_admin_peut_lister_tournois():
     assert resp.status_code == 200
 
     # pagination ou non
-    data = resp.data["results"] if isinstance(resp.data, dict) and "results" in resp.data else resp.data
+    data = (
+        resp.data["results"]
+        if isinstance(resp.data, dict) and "results" in resp.data
+        else resp.data
+    )
     assert len(data) == 2
 
 

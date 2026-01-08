@@ -57,16 +57,31 @@ def _setup_phase1_cloturee_avec_9_equipes_loisir():
     # 3 matchs nuls (pas besoin du round robin complet)
     matchs = [
         Match.objects.create(
-            edition=edition, phase_globale=phase1, sous_phase=sp1, groupe=groupe,
-            equipe_a=equipes[0], equipe_b=equipes[1], statut=StatutMatch.A_PLANIFIER
+            edition=edition,
+            phase_globale=phase1,
+            sous_phase=sp1,
+            groupe=groupe,
+            equipe_a=equipes[0],
+            equipe_b=equipes[1],
+            statut=StatutMatch.A_PLANIFIER,
         ),
         Match.objects.create(
-            edition=edition, phase_globale=phase1, sous_phase=sp1, groupe=groupe,
-            equipe_a=equipes[2], equipe_b=equipes[3], statut=StatutMatch.A_PLANIFIER
+            edition=edition,
+            phase_globale=phase1,
+            sous_phase=sp1,
+            groupe=groupe,
+            equipe_a=equipes[2],
+            equipe_b=equipes[3],
+            statut=StatutMatch.A_PLANIFIER,
         ),
         Match.objects.create(
-            edition=edition, phase_globale=phase1, sous_phase=sp1, groupe=groupe,
-            equipe_a=equipes[4], equipe_b=equipes[5], statut=StatutMatch.A_PLANIFIER
+            edition=edition,
+            phase_globale=phase1,
+            sous_phase=sp1,
+            groupe=groupe,
+            equipe_a=equipes[4],
+            equipe_b=equipes[5],
+            statut=StatutMatch.A_PLANIFIER,
         ),
     ]
     for m in matchs:

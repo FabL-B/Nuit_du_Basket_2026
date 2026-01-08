@@ -47,7 +47,8 @@ class PhaseGlobaleViewSet(viewsets.ModelViewSet):
                 "phase2_id": preview.phase2_id,
                 "tournois_impairs": getattr(preview, "tournois_impairs", []),
                 "propositions": [
-                    p.__dict__ if hasattr(p, "__dict__") else p for p in getattr(preview, "propositions", [])
+                    p.__dict__ if hasattr(p, "__dict__") else p
+                    for p in getattr(preview, "propositions", [])
                 ],
             },
             status=status.HTTP_200_OK,

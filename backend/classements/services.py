@@ -139,7 +139,9 @@ def recalculer_classements_pour_groupe(groupe) -> None:
     # --- préserver les décisions admin avant de reconstruire ---
     decisions_admin = {
         c.equipe_id: (c.rang_manuel, c.note_admin)
-        for c in Classement.objects.filter(groupe=groupe).only("equipe_id", "rang_manuel", "note_admin")
+        for c in Classement.objects.filter(groupe=groupe).only(
+            "equipe_id", "rang_manuel", "note_admin"
+        )
     }
 
     # Remplacement complet : pas de risques d’incréments cumulés

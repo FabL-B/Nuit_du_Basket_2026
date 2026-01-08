@@ -72,7 +72,9 @@ def cloturer_phase_globale(phase_globale: PhaseGlobale) -> ResumeCloturePhase:
     - si égalité >=3 équipes dans un groupe => rang_manuel obligatoire
     """
     # 1) Vérifier que tous les matchs sont finalisés
-    matchs = list(Match.objects.filter(phase_globale=phase_globale).only("id", "statut", "groupe_id"))
+    matchs = list(
+        Match.objects.filter(phase_globale=phase_globale).only("id", "statut", "groupe_id")
+    )
     if not matchs:
         raise ErreurCloturePhase("Impossible de clôturer : aucun match pour cette phase globale.")
 
@@ -112,5 +114,5 @@ def cloturer_phase_globale(phase_globale: PhaseGlobale) -> ResumeCloturePhase:
     phase_globale.save(update_fields=["statut", "modifie_le"])
 
     SousPhase.objects.filter(phase_globale=phase_globale).update(statut=StatutPhase.CLOTUREE)
-    
+
     return ResumeCloturePhase(groupes=len(groupes), matchs_total=len(matchs))

@@ -53,7 +53,9 @@ def _calculer_tailles_groupes_v2(nb_equipes: int) -> List[int]:
     )
 
 
-def _creer_groupes_et_affectations(sous_phase: SousPhase, equipes: Sequence[Equipe]) -> List[Groupe]:
+def _creer_groupes_et_affectations(
+    sous_phase: SousPhase, equipes: Sequence[Equipe]
+) -> List[Groupe]:
     nb_equipes = len(equipes)
     tailles = _calculer_tailles_groupes_v2(nb_equipes)
 
@@ -127,6 +129,8 @@ def generer_groupes_pour_sous_phase_avec_equipes(
     )
 
     if len(equipes) != len(set(equipe_ids)):
-        raise ErreurGenerationGroupes("Liste d'équipes invalide : certaines équipes sont introuvables.")
+        raise ErreurGenerationGroupes(
+            "Liste d'équipes invalide : certaines équipes sont introuvables."
+        )
 
     return _creer_groupes_et_affectations(sous_phase, equipes)
