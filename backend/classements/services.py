@@ -136,11 +136,19 @@ def recalculer_classements_pour_groupe(groupe) -> None:
             stats[a].joues += 1
             stats[b].joues += 1
 
+    # --- préserver les décisions admin avant de reconstruire ---
+    decisions_admin = {
+        c.equipe_id: (c.rang_manuel, c.note_admin)
+        for c in Classement.objects.filter(groupe=groupe).only("equipe_id", "rang_manuel", "note_admin")
+    }
+
     # Remplacement complet : pas de risques d’incréments cumulés
     Classement.objects.filter(groupe=groupe).delete()
 
     to_create = []
     for eid, s in stats.items():
+        rang_manuel, note_admin = decisions_admin.get(eid, (None, ""))
+
         to_create.append(
             Classement(
                 groupe=groupe,
@@ -153,6 +161,9 @@ def recalculer_classements_pour_groupe(groupe) -> None:
                 points_encaisses=s.points_encaisses,
                 difference=s.difference,
                 points_classement=s.points_classement,
+                rang_manuel=rang_manuel,
+                note_admin=note_admin or "",
             )
         )
+
     Classement.objects.bulk_create(to_create)
