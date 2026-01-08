@@ -1,8 +1,12 @@
-from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
 
 from matchs.models import Match
+from matchs.models import MatchSheet
 from api_admin.serializers.matchs import MatchSerializer
+from api_admin.serializers.feuilles import MatchSheetSerializer
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -56,3 +60,18 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(statut=statut)
 
         return qs
+
+    @action(detail=True, methods=["post"], url_path="feuille")
+    def generer_feuille(self, request, pk=None):
+        match = self.get_object()
+
+        feuille, created = MatchSheet.objects.get_or_create(match=match)
+
+        serializer = MatchSheetSerializer(feuille)
+        return Response(
+            {
+                "created": created,
+                "feuille": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
