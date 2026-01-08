@@ -5,11 +5,11 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
 
-from matchs.models import Match, MatchSheet, Score
 from api_admin.serializers.matchs import MatchSerializer
 from api_admin.serializers.feuilles import MatchSheetSerializer
 from api_admin.serializers.scores import SaisieScoreSerializer
-
+from matchs.models import Match, MatchSheet, Score
+from matchs.services_scores import valider_score, ErreurScore
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminUser]
@@ -110,6 +110,27 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
                 "points_a": score.points_a,
                 "points_b": score.points_b,
                 "valide_le": score.valide_le,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="score/valider")
+    def valider_score(self, request, pk=None):
+        match = self.get_object()
+
+        try:
+            score = valider_score(match, request.user)
+        except (ErreurScore, ValidationError) as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "match_id": match.id,
+                "score_id": score.id,
+                "valide_le": score.valide_le,
+                "valide_par": score.valide_par_id,
+                "statut_match": match.statut,
+                "detail": "Score validé.",
             },
             status=status.HTTP_200_OK,
         )
