@@ -121,8 +121,8 @@ Elle est alignée avec :
 | 4.1  | Modèle Classement                                  | ✅      |
 | 4.2  | Calcul automatique du classement                   | ✅      |
 | 4.3  | Tie-breaks (diff / points / confrontation directe) | ✅      |
-| 4.4  | Passage Phase 1 → Phase 2                          | ⬜      |
-| 4.5  | Phases finales (brackets manuels assistés)         | ⬜      |
+| 4.4  | Passage Phase 1 → Phase 2                          | ⛔      |
+| 4.5  | Phases finales (brackets manuels assistés)         | ⛔      |
 
 ---
 
