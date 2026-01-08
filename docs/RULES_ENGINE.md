@@ -349,3 +349,7 @@ Objectif : 50% Challenge / 50% Consolante (au mieux)
 
 - Tie-breaks implémentés (points/diff/points marqués/confrontation directe/manuel)
 - Tie-break : confrontation directe uniquement pour égalité à 2 équipes ; égalité à ≥3 équipes → départage manuel.
+
+### 2026-01-08
+
+- Clôture de phase : blocage obligatoire si égalité à ≥3 équipes sans `rang_manuel` (règle process).
