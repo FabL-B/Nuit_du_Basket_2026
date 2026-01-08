@@ -19,20 +19,33 @@ from classements.services_tri import ordonner_classement_groupe
 def test_tiebreak_confrontation_directe_2_equipes():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="A", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="B", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="A", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="B", statut=StatutEquipe.VALIDEE
+    )
 
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 
     # Match direct : e2 bat e1
     m = Match.objects.create(
-        edition=edition, phase_globale=phase, sous_phase=sp, groupe=groupe,
-        equipe_a=e1, equipe_b=e2, statut=StatutMatch.A_PLANIFIER
+        edition=edition,
+        phase_globale=phase,
+        sous_phase=sp,
+        groupe=groupe,
+        equipe_a=e1,
+        equipe_b=e2,
+        statut=StatutMatch.A_PLANIFIER,
     )
     saisir_score(m, 10, 12)
     admin = get_user_model().objects.create(username="admin")
@@ -48,19 +61,31 @@ def test_tiebreak_confrontation_directe_2_equipes():
 def test_tiebreak_rang_manuel_departage_dernier_recours():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="A", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="B", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="A", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="B", statut=StatutEquipe.VALIDEE
+    )
 
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 
     # On crée directement deux classements parfaitement identiques
-    Classement.objects.create(groupe=groupe, equipe=e1, points_classement=3, difference=0, points_marques=0, rang_manuel=2)
-    Classement.objects.create(groupe=groupe, equipe=e2, points_classement=3, difference=0, points_marques=0, rang_manuel=1)
+    Classement.objects.create(
+        groupe=groupe, equipe=e1, points_classement=3, difference=0, points_marques=0, rang_manuel=2
+    )
+    Classement.objects.create(
+        groupe=groupe, equipe=e2, points_classement=3, difference=0, points_marques=0, rang_manuel=1
+    )
 
     ordre = ordonner_classement_groupe(groupe)
     assert [c.equipe_id for c in ordre] == [e2.id, e1.id]
@@ -70,22 +95,53 @@ def test_tiebreak_rang_manuel_departage_dernier_recours():
 def test_tiebreak_egalite_3_equipes_pas_de_miniligue_utilise_rang_manuel():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="A", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="B", statut=StatutEquipe.VALIDEE)
-    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="C", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="A", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="B", statut=StatutEquipe.VALIDEE
+    )
+    e3 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="C", statut=StatutEquipe.VALIDEE
+    )
 
     for e in (e1, e2, e3):
         GroupeEquipe.objects.create(groupe=groupe, equipe=e)
 
     # 3 classements strictement identiques (même points/diff/points_marques)
     # -> le tri doit s'appuyer sur rang_manuel (pas de mini-ligue)
-    Classement.objects.create(groupe=groupe, equipe=e1, points_classement=3, difference=0, points_marques=10, rang_manuel=2)
-    Classement.objects.create(groupe=groupe, equipe=e2, points_classement=3, difference=0, points_marques=10, rang_manuel=1)
-    Classement.objects.create(groupe=groupe, equipe=e3, points_classement=3, difference=0, points_marques=10, rang_manuel=3)
+    Classement.objects.create(
+        groupe=groupe,
+        equipe=e1,
+        points_classement=3,
+        difference=0,
+        points_marques=10,
+        rang_manuel=2,
+    )
+    Classement.objects.create(
+        groupe=groupe,
+        equipe=e2,
+        points_classement=3,
+        difference=0,
+        points_marques=10,
+        rang_manuel=1,
+    )
+    Classement.objects.create(
+        groupe=groupe,
+        equipe=e3,
+        points_classement=3,
+        difference=0,
+        points_marques=10,
+        rang_manuel=3,
+    )
 
     ordre = ordonner_classement_groupe(groupe)
     assert [c.equipe_id for c in ordre] == [e2.id, e1.id, e3.id]

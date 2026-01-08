@@ -18,7 +18,9 @@ def _key_admin(rang_manuel: int | None) -> int:
     return rang_manuel if rang_manuel is not None else 10**9
 
 
-def _departager_par_confrontation_directe(groupe_id: int, equipe_a_id: int, equipe_b_id: int) -> int | None:
+def _departager_par_confrontation_directe(
+    groupe_id: int, equipe_a_id: int, equipe_b_id: int
+) -> int | None:
     """
     Retourne l'équipe gagnante si on peut départager, sinon None.
     """
