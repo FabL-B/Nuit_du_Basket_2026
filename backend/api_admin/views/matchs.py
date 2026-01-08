@@ -9,8 +9,11 @@ from api_admin.serializers.matchs import MatchSerializer
 from api_admin.serializers.feuilles import MatchSheetSerializer
 from api_admin.serializers.scores import SaisieScoreSerializer
 from api_admin.serializers.planning import SwapPlanningSerializer
+from api_admin.serializers.forfaits import ForfaitSerializer
+
 from matchs.models import Match, MatchSheet, Score
 from matchs.services_scores import valider_score, ErreurScore
+from matchs.services_forfaits import declarer_forfait, ErreurForfait
 from planning.services_editions import swap_planning_matchs, ErreurEditionPlanning
 
 
@@ -156,6 +159,29 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
                 "detail": "Swap planning effectué.",
                 "match_a_id": resume.match_a_id,
                 "match_b_id": resume.match_b_id,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="forfait")
+    def forfait(self, request, pk=None):
+        match = self.get_object()
+
+        serializer = ForfaitSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        statut = serializer.validated_data["statut"]
+
+        try:
+            resume = declarer_forfait(match, statut)
+        except ErreurForfait as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "match_id": resume.match_id,
+                "statut_match": resume.statut_match,
+                "detail": "Forfait enregistré.",
             },
             status=status.HTTP_200_OK,
         )
