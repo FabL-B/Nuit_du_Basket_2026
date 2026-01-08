@@ -8,8 +8,11 @@ from rest_framework.permissions import IsAdminUser
 from api_admin.serializers.matchs import MatchSerializer
 from api_admin.serializers.feuilles import MatchSheetSerializer
 from api_admin.serializers.scores import SaisieScoreSerializer
+from api_admin.serializers.planning import SwapPlanningSerializer
 from matchs.models import Match, MatchSheet, Score
 from matchs.services_scores import valider_score, ErreurScore
+from planning.services_editions import swap_planning_matchs, ErreurEditionPlanning
+
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminUser]
@@ -131,6 +134,28 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
                 "valide_par": score.valide_par_id,
                 "statut_match": match.statut,
                 "detail": "Score validé.",
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["post"], url_path="swap-planning")
+    def swap_planning(self, request):
+        serializer = SwapPlanningSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        match_a = Match.objects.get(pk=serializer.validated_data["match_a_id"])
+        match_b = Match.objects.get(pk=serializer.validated_data["match_b_id"])
+
+        try:
+            resume = swap_planning_matchs(match_a, match_b)
+        except ErreurEditionPlanning as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "detail": "Swap planning effectué.",
+                "match_a_id": resume.match_a_id,
+                "match_b_id": resume.match_b_id,
             },
             status=status.HTTP_200_OK,
         )
