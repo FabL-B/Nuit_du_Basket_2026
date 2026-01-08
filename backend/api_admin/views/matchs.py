@@ -1,12 +1,14 @@
+from django.core.exceptions import ValidationError
+
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
 
-from matchs.models import Match
-from matchs.models import MatchSheet
+from matchs.models import Match, MatchSheet, Score
 from api_admin.serializers.matchs import MatchSerializer
 from api_admin.serializers.feuilles import MatchSheetSerializer
+from api_admin.serializers.scores import SaisieScoreSerializer
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -72,6 +74,42 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             {
                 "created": created,
                 "feuille": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="score")
+    def saisir_score(self, request, pk=None):
+        match = self.get_object()
+
+        serializer = SaisieScoreSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        points_a = serializer.validated_data["points_a"]
+        points_b = serializer.validated_data["points_b"]
+
+        score, _ = Score.objects.get_or_create(
+            match=match,
+            defaults={"points_a": points_a, "points_b": points_b},
+        )
+
+        if score.pk and (score.points_a != points_a or score.points_b != points_b):
+            score.points_a = points_a
+            score.points_b = points_b
+
+        try:
+            score.full_clean()
+            score.save()
+        except ValidationError as e:
+            return Response({"detail": e.message_dict if hasattr(e, "message_dict") else str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "match_id": match.id,
+                "score_id": score.id,
+                "points_a": score.points_a,
+                "points_b": score.points_b,
+                "valide_le": score.valide_le,
             },
             status=status.HTTP_200_OK,
         )
