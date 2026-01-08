@@ -74,7 +74,7 @@ Elle est alignée avec :
 | ---- | -------------------------------------- | ------ |
 | 2.1  | Modèles PhaseGlobale / SousPhase       | ✅      |
 | 2.2  | Génération automatique des sous-phases | ✅      |
-| 2.3  | Clôture PhaseGlobale (+ sous-phases)   | ⬜      |
+| 2.3  | Clôture PhaseGlobale (+ sous-phases)   | ✅      |
 
 ---
 
@@ -120,7 +120,7 @@ Elle est alignée avec :
 | ---- | -------------------------------------------------- | ------ |
 | 4.1  | Modèle Classement                                  | ✅      |
 | 4.2  | Calcul automatique du classement                   | ✅      |
-| 4.3  | Tie-breaks (diff / points / confrontation directe) | ⬜      |
+| 4.3  | Tie-breaks (diff / points / confrontation directe) | ✅      |
 | 4.4  | Passage Phase 1 → Phase 2                          | ⬜      |
 | 4.5  | Phases finales (brackets manuels assistés)         | ⬜      |
 

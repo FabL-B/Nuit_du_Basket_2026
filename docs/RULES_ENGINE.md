@@ -111,6 +111,15 @@ Règle :
 
 * clôturer une **phase globale** clôture toutes ses **sous-phases**
 
+Règle process (clôture) :
+
+* une phase globale **ne peut pas être clôturée** si, dans au moins un groupe :
+  * il existe une égalité entre **3 équipes ou plus** sur les critères de classement
+  * et que le champ `rang_manuel` n’a pas été renseigné par un administrateur
+* cette règle vise à empêcher tout départage automatique arbitraire
+* le tri du classement reste consultable, mais la **clôture est bloquée**
+
+
 ### 3.3 Match
 
 Statuts attendus (minimum) :
@@ -285,10 +294,14 @@ Permettre d’insérer une ou plusieurs pauses dans le planning, par exemple :
 
 Tie-break :
 
+Tie-break :
+
 1. Différence de points
 2. Points marqués
-3. Confrontation directe
-4. Décision manuelle admin
+3. Confrontation directe (uniquement en cas d’égalité à 2 équipes)
+4. Décision manuelle admin (obligatoire en cas d’égalité à ≥3 équipes)
+
+⚠️ En cas d’égalité à ≥3 équipes, l’absence de décision manuelle bloque la clôture de la phase.
 
 ---
 
@@ -331,3 +344,8 @@ Objectif : 50% Challenge / 50% Consolante (au mieux)
   - génération créneaux + affectation terrain/créneau (contraintes strictes)
   - heuristiques améliorées (enchaînements + équilibrage I/E) + métriques
   - pauses nommées + recalcul des débuts de créneaux
+
+### 2026-01-07
+
+- Tie-breaks implémentés (points/diff/points marqués/confrontation directe/manuel)
+- Tie-break : confrontation directe uniquement pour égalité à 2 équipes ; égalité à ≥3 équipes → départage manuel.
