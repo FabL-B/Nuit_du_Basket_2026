@@ -8,6 +8,7 @@ from api_admin.serializers.phases import PhaseGlobaleSerializer
 
 from phases.services_cloture import cloturer_phase_globale, ErreurCloturePhase
 from phases.services_phase2 import previsualiser_phase2_depuis_phase1, ErreurGenerationPhase2
+from matchs.services_generation import generer_matchs_pour_phase_globale, ErreurGenerationMatchs
 
 
 class PhaseGlobaleViewSet(viewsets.ModelViewSet):
@@ -50,6 +51,23 @@ class PhaseGlobaleViewSet(viewsets.ModelViewSet):
                     p.__dict__ if hasattr(p, "__dict__") else p
                     for p in getattr(preview, "propositions", [])
                 ],
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="generer-matchs")
+    def generer_matchs(self, request, pk=None):
+        phase = self.get_object()
+        try:
+            resume = generer_matchs_pour_phase_globale(phase)
+        except ErreurGenerationMatchs as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "phase_id": phase.id,
+                "matchs_crees": getattr(resume, "matchs_crees", None),
+                "detail": "Génération des matchs terminée.",
             },
             status=status.HTTP_200_OK,
         )
