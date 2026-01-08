@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Sequence
 
 from django.db import transaction
 
@@ -53,25 +53,7 @@ def _calculer_tailles_groupes_v2(nb_equipes: int) -> List[int]:
     )
 
 
-@transaction.atomic
-def generer_groupes_pour_sous_phase(sous_phase: SousPhase) -> List[Groupe]:
-    """
-    Génère automatiquement les groupes pour une sous-phase donnée selon les nouvelles règles.
-    Protection anti-doublon : refuse si des groupes existent déjà pour la sous-phase.
-    """
-    if sous_phase.groupes.exists():
-        raise ErreurGenerationGroupes(
-            "Des groupes existent déjà pour cette sous-phase. Suppression manuelle requise avant régénération."
-        )
-
-    equipes = list(
-        Equipe.objects.filter(
-            edition=sous_phase.phase_globale.edition,
-            tournoi=sous_phase.tournoi,
-            statut=StatutEquipe.VALIDEE,
-        ).order_by("id")
-    )
-
+def _creer_groupes_et_affectations(sous_phase: SousPhase, equipes: Sequence[Equipe]) -> List[Groupe]:
     nb_equipes = len(equipes)
     tailles = _calculer_tailles_groupes_v2(nb_equipes)
 
@@ -93,3 +75,58 @@ def generer_groupes_pour_sous_phase(sous_phase: SousPhase) -> List[Groupe]:
             index_equipe += 1
 
     return groupes_crees
+
+
+@transaction.atomic
+def generer_groupes_pour_sous_phase(sous_phase: SousPhase) -> List[Groupe]:
+    """
+    Génère automatiquement les groupes pour une sous-phase donnée.
+    (comportement historique Phase 1 : toutes les équipes validées du tournoi)
+    Protection anti-doublon : refuse si des groupes existent déjà pour la sous-phase.
+    """
+    if sous_phase.groupes.exists():
+        raise ErreurGenerationGroupes(
+            "Des groupes existent déjà pour cette sous-phase. Suppression manuelle requise avant régénération."
+        )
+
+    equipes = list(
+        Equipe.objects.filter(
+            edition=sous_phase.phase_globale.edition,
+            tournoi=sous_phase.tournoi,
+            statut=StatutEquipe.VALIDEE,
+        ).order_by("id")
+    )
+
+    return _creer_groupes_et_affectations(sous_phase, equipes)
+
+
+@transaction.atomic
+def generer_groupes_pour_sous_phase_avec_equipes(
+    sous_phase: SousPhase,
+    equipe_ids: list[int],
+) -> List[Groupe]:
+    """
+    Génère les groupes pour une sous-phase à partir d'une liste explicite d'équipes (Phase 2).
+    Protection anti-doublon : refuse si des groupes existent déjà pour la sous-phase.
+    """
+    if sous_phase.groupes.exists():
+        raise ErreurGenerationGroupes(
+            "Des groupes existent déjà pour cette sous-phase. Suppression manuelle requise avant régénération."
+        )
+
+    if not equipe_ids:
+        return []
+
+    equipes = list(
+        Equipe.objects.filter(
+            id__in=equipe_ids,
+            edition=sous_phase.phase_globale.edition,
+            tournoi=sous_phase.tournoi,
+            statut=StatutEquipe.VALIDEE,
+        ).order_by("id")
+    )
+
+    if len(equipes) != len(set(equipe_ids)):
+        raise ErreurGenerationGroupes("Liste d'équipes invalide : certaines équipes sont introuvables.")
+
+    return _creer_groupes_et_affectations(sous_phase, equipes)
