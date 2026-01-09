@@ -6,14 +6,6 @@ from phases.services.finale_seeding import (
 )
 
 
-import pytest
-
-from phases.services.finale_seeding import (
-    ErreurSeeding,
-    generer_paires_premier_tour,
-)
-
-
 def test_seeding_4_equipes_demis():
     equipes = ["E1", "E2", "E3", "E4"]
     assert generer_paires_premier_tour(equipes) == [("E1", "E4"), ("E2", "E3")]
