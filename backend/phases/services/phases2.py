@@ -4,18 +4,11 @@ from dataclasses import dataclass
 
 from django.db import transaction
 
-from classements.models import Classement
 from classements.services_tri import ordonner_classement_groupe
 from groupes.models import Groupe
-from inscriptions.models import Equipe
-from phases.models import (
-    BrancheSousPhase,
-    PhaseGlobale,
-    SousPhase,
-    StatutPhase,
-    TypePhaseGlobale,
-)
-from tournois.models import CodeTournoi, Tournoi
+from phases.models import BrancheSousPhase, PhaseGlobale, SousPhase, StatutPhase, TypePhaseGlobale
+from phases.services.sous_phases import assurer_sous_phases_pour_phase_globale
+from tournois.models import CodeTournoi
 from groupes.services import generer_groupes_phase2_pour_sous_phase_avec_equipes
 
 
@@ -28,8 +21,8 @@ class PropositionRepartition:
     code_tournoi: str
     equipe_ids_ordre: list[int]
     nb_total: int
-    nb_challenge_min: int  # floor(n/2)
-    nb_challenge_max: int  # ceil(n/2)
+    nb_challenge_min: int
+    nb_challenge_max: int
 
 
 @dataclass(frozen=True)
@@ -58,23 +51,7 @@ def _get_phase2(edition_id: int) -> PhaseGlobale:
     return phase2
 
 
-def _get_or_create_sousphases_phase2(phase2: PhaseGlobale) -> None:
-    tournois = list(Tournoi.objects.filter(edition=phase2.edition))
-    if not tournois:
-        raise ErreurGenerationPhase2("Aucun tournoi pour cette édition.")
-
-    for t in tournois:
-        for branche in (BrancheSousPhase.CHALLENGE, BrancheSousPhase.CONSOLANTE):
-            SousPhase.objects.get_or_create(
-                phase_globale=phase2,
-                tournoi=t,
-                branche=branche,
-                defaults={"statut": StatutPhase.BROUILLON},
-            )
-
-
 def _ordre_equipes_par_tournoi_phase1(phase1: PhaseGlobale, code_tournoi: str) -> list[int]:
-    # groupes Phase 1 du tournoi (branche AUCUNE)
     groupes = list(
         Groupe.objects.filter(
             sous_phase__phase_globale=phase1,
@@ -85,7 +62,6 @@ def _ordre_equipes_par_tournoi_phase1(phase1: PhaseGlobale, code_tournoi: str) -
     if not groupes:
         return []
 
-    # ordre par groupe (tri officiel), puis concat 1ers/2e/3e...
     ordre_par_groupe: list[list[int]] = []
     max_len = 0
 
@@ -103,9 +79,8 @@ def _ordre_equipes_par_tournoi_phase1(phase1: PhaseGlobale, code_tournoi: str) -
             if rang < len(ids):
                 resultat.append(ids[rang])
 
-    # dédoublonnage sécurité
     seen = set()
-    unique = []
+    unique: list[int] = []
     for eid in resultat:
         if eid not in seen:
             unique.append(eid)
@@ -129,7 +104,9 @@ def previsualiser_phase2_depuis_phase1(phase1: PhaseGlobale) -> ResumePreviewPha
         raise ErreurGenerationPhase2("Phase 1 doit être clôturée avant prévisualisation Phase 2.")
 
     phase2 = _get_phase2(phase1.edition_id)
-    _get_or_create_sousphases_phase2(phase2)
+
+    # Idempotent + source unique de vérité (tournois/branches)
+    assurer_sous_phases_pour_phase_globale(phase2)
 
     propositions: list[PropositionRepartition] = []
     tournois_impairs: list[str] = []
@@ -168,16 +145,11 @@ def generer_phase2_depuis_phase1(
     phase1: PhaseGlobale,
     decision_impair: dict[str, str] | None = None,
 ) -> ResumeGenerationPhase2:
-    """
-    decision_impair: mapping {code_tournoi: "CHALLENGE"|"CONSOLANTE"}.
-    Obligatoire si le tournoi a un nombre impair d'équipes.
-    """
     preview = previsualiser_phase2_depuis_phase1(phase1)
     phase2 = PhaseGlobale.objects.get(id=preview.phase2_id)
 
     decision_impair = decision_impair or {}
 
-    # Validation des choix admin pour tournois impairs
     for code in preview.tournois_impairs:
         if code not in decision_impair:
             raise ErreurGenerationPhase2(
@@ -199,26 +171,21 @@ def generer_phase2_depuis_phase1(
         if n % 2 == 0:
             nb_challenge = n // 2
         else:
-            # choix admin : qui a l'équipe en plus
             if decision_impair[prop.code_tournoi] == "CHALLENGE":
                 nb_challenge = (n + 1) // 2
             else:
-                nb_challenge = n // 2  # l'équipe en plus va en consolante
+                nb_challenge = n // 2
 
         ids_challenge = ordre[:nb_challenge]
         ids_consolante = ordre[nb_challenge:]
 
         sp_challenge = _get_sous_phase_phase2(phase2, prop.code_tournoi, BrancheSousPhase.CHALLENGE)
-        sp_consolante = _get_sous_phase_phase2(
-            phase2, prop.code_tournoi, BrancheSousPhase.CONSOLANTE
-        )
+        sp_consolante = _get_sous_phase_phase2(phase2, prop.code_tournoi, BrancheSousPhase.CONSOLANTE)
 
-        # Créer les groupes Phase 2
         groupes_ch = generer_groupes_phase2_pour_sous_phase_avec_equipes(sp_challenge, ids_challenge)
         groupes_co = generer_groupes_phase2_pour_sous_phase_avec_equipes(sp_consolante, ids_consolante)
 
         groupes_crees += len(groupes_ch) + len(groupes_co)
-
         total_challenge += len(ids_challenge)
         total_consolante += len(ids_consolante)
 

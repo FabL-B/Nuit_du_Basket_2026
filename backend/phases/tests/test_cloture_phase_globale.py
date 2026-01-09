@@ -11,7 +11,7 @@ from groupes.models import Groupe, GroupeEquipe
 from matchs.models import Match, StatutMatch
 from matchs.services_scores import saisir_score, valider_score
 from classements.models import Classement
-from phases.services_cloture import cloturer_phase_globale, ErreurCloturePhase
+from phases.services.cloture import cloturer_phase_globale, ErreurCloturePhase
 
 
 @pytest.mark.django_db

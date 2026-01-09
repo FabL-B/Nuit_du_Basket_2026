@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from phases.models import PhaseGlobale
 from api_admin.serializers.phases import PhaseGlobaleSerializer
 
-from phases.services_cloture import cloturer_phase_globale, ErreurCloturePhase
-from phases.services_phase2 import previsualiser_phase2_depuis_phase1, ErreurGenerationPhase2
+from phases.services.cloture import cloturer_phase_globale, ErreurCloturePhase
+from phases.services.phases2 import previsualiser_phase2_depuis_phase1, ErreurGenerationPhase2
 from matchs.services_generation import generer_matchs_pour_phase_globale, ErreurGenerationMatchs
 from planning.services_planning import (
     generer_planning_phase_globale,

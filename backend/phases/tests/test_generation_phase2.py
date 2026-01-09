@@ -16,7 +16,7 @@ from inscriptions.models import Equipe, StatutEquipe
 from groupes.models import Groupe, GroupeEquipe
 from matchs.models import Match, StatutMatch
 from matchs.services_scores import saisir_score, valider_score
-from phases.services_phase2 import (
+from phases.services.phases2 import (
     generer_phase2_depuis_phase1,
     ErreurGenerationPhase2,
 )

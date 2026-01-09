@@ -3,7 +3,7 @@ import pytest
 from core.models import Edition
 from tournois.models import Tournoi, CodeTournoi
 from phases.models import PhaseGlobale, TypePhaseGlobale, BrancheSousPhase
-from phases.services import generer_sous_phases_pour_phase_globale, ErreurGenerationSousPhases
+from phases.services.sous_phases import generer_sous_phases_pour_phase_globale, ErreurGenerationSousPhases
 
 
 @pytest.mark.django_db
