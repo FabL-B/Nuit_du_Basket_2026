@@ -3,7 +3,7 @@ from __future__ import annotations
 from django.db import transaction
 
 from phases.models import PhaseGlobale, SousPhase
-from phases.services._shared import branches_attendues, tournois_attendus_pour_edition
+from phases.services._shared import branches_attendues, tournois_presents_pour_edition
 
 
 class ErreurGenerationSousPhases(ValueError):
@@ -33,7 +33,7 @@ def assurer_sous_phases_pour_phase_globale(phase_globale: PhaseGlobale) -> list[
     Version idempotente : crée les sous-phases manquantes via get_or_create
     et retourne la liste complète attendue.
     """
-    tournois = tournois_attendus_pour_edition(phase_globale)
+    tournois = tournois_presents_pour_edition(phase_globale)
     branches = branches_attendues(phase_globale.type_phase)
 
     resultat: list[SousPhase] = []

@@ -8,7 +8,7 @@ from classements.services_tri import ordonner_classement_groupe
 from groupes.models import Groupe
 from phases.models import BrancheSousPhase, PhaseGlobale, SousPhase, StatutPhase, TypePhaseGlobale
 from phases.services.sous_phases import assurer_sous_phases_pour_phase_globale
-from tournois.models import CodeTournoi
+from phases.services._shared import tournois_presents_pour_edition
 from groupes.services import generer_groupes_phase2_pour_sous_phase_avec_equipes
 
 
@@ -111,7 +111,8 @@ def previsualiser_phase2_depuis_phase1(phase1: PhaseGlobale) -> ResumePreviewPha
     propositions: list[PropositionRepartition] = []
     tournois_impairs: list[str] = []
 
-    for code in (CodeTournoi.ROOKIE, CodeTournoi.LOISIR, CodeTournoi.COMPETITEUR):
+    for tournoi in tournois_presents_pour_edition(phase1):
+        code = tournoi.code
         ordre = _ordre_equipes_par_tournoi_phase1(phase1, code)
         if not ordre:
             continue
