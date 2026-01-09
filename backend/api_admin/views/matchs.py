@@ -5,6 +5,13 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
 
+from api_admin.openapi.matchs import (
+    schema_matchs_viewset,
+    schema_generer_feuille,
+    schema_saisir_score,
+    schema_valider_score,
+)
+
 from api_admin.serializers.matchs import MatchSerializer
 from api_admin.serializers.feuilles import MatchSheetSerializer
 from api_admin.serializers.scores import SaisieScoreSerializer
@@ -17,6 +24,7 @@ from matchs.services_forfaits import declarer_forfait, ErreurForfait
 from planning.services_editions import swap_planning_matchs, ErreurEditionPlanning
 
 
+@schema_matchs_viewset
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAdminUser]
     serializer_class = MatchSerializer
@@ -69,6 +77,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
 
         return qs
 
+    @schema_generer_feuille
     @action(detail=True, methods=["post"], url_path="feuille")
     def generer_feuille(self, request, pk=None):
         match = self.get_object()
@@ -84,6 +93,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @schema_saisir_score
     @action(detail=True, methods=["post"], url_path="score")
     def saisir_score(self, request, pk=None):
         match = self.get_object()
@@ -120,6 +130,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @schema_valider_score
     @action(detail=True, methods=["post"], url_path="score/valider")
     def valider_score(self, request, pk=None):
         match = self.get_object()
