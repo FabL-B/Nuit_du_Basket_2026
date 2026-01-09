@@ -2,10 +2,8 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample
 
 from api_admin.serializers.groupes import GroupeSerializer
-from api_admin.schema import TAG_GROUPES, REP_400, REP_403, REP_404
 from api_admin.openapi.groupes import schema_groupes_viewset, schema_swap_equipes
 
 from groupes.services_swap import swap_equipes_entre_groupes, ErreurSwapGroupes
