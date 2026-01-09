@@ -90,3 +90,95 @@ def test_refuse_regeneration_si_matchs_existent():
 
     with pytest.raises(ErreurGenerationMatchs):
         generer_matchs_pour_phase_globale(phase)
+
+
+@pytest.mark.django_db
+def test_phase2_genere_matchs_round_robin_par_groupe():
+    edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
+    tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
+
+    # Phase 2
+    phase2 = PhaseGlobale.objects.create(
+        edition=edition,
+        type_phase=TypePhaseGlobale.PHASE_2,
+        sequence=1,
+    )
+
+    sp_ch = SousPhase.objects.create(
+        phase_globale=phase2,
+        tournoi=tournoi,
+        branche=BrancheSousPhase.CHALLENGE,
+    )
+    sp_co = SousPhase.objects.create(
+        phase_globale=phase2,
+        tournoi=tournoi,
+        branche=BrancheSousPhase.CONSOLANTE,
+    )
+
+    # Challenge: 3 équipes => 3 matchs
+    g_ch = Groupe.objects.create(sous_phase=sp_ch, code="A")
+    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
+    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE)
+    for e in (e1, e2, e3):
+        GroupeEquipe.objects.create(groupe=g_ch, equipe=e)
+
+    # Consolante: 4 équipes => 6 matchs
+    g_co = Groupe.objects.create(sous_phase=sp_co, code="B")
+    e4 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE)
+    e5 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E5", statut=StatutEquipe.VALIDEE)
+    e6 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E6", statut=StatutEquipe.VALIDEE)
+    e7 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E7", statut=StatutEquipe.VALIDEE)
+    for e in (e4, e5, e6, e7):
+        GroupeEquipe.objects.create(groupe=g_co, equipe=e)
+
+    # Act
+    resume = generer_matchs_pour_phase_globale(phase2)
+
+    # Assert
+    # 3 (round-robin à 3) + 6 (round-robin à 4) = 9 matchs
+    assert resume.matchs_crees == 9
+
+    assert Match.objects.filter(phase_globale=phase2).count() == 9
+    assert Match.objects.filter(phase_globale=phase2, statut=StatutMatch.A_PLANIFIER).count() == 9
+
+    # Vérifie que tout est bien rattaché à la bonne sous-phase/groupe
+    assert Match.objects.filter(groupe=g_ch, sous_phase=sp_ch).count() == 3
+    assert Match.objects.filter(groupe=g_co, sous_phase=sp_co).count() == 6
+
+
+@pytest.mark.django_db
+def test_phase2_refuse_si_matchs_deja_generes():
+    edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
+    tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
+
+    phase2 = PhaseGlobale.objects.create(
+        edition=edition,
+        type_phase=TypePhaseGlobale.PHASE_2,
+        sequence=1,
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase2,
+        tournoi=tournoi,
+        branche=BrancheSousPhase.CHALLENGE,
+    )
+    g = Groupe.objects.create(sous_phase=sp, code="A")
+
+    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
+    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    GroupeEquipe.objects.create(groupe=g, equipe=e1)
+    GroupeEquipe.objects.create(groupe=g, equipe=e2)
+
+    # On simule qu'un match existe déjà
+    Match.objects.create(
+        edition=edition,
+        phase_globale=phase2,
+        sous_phase=sp,
+        groupe=g,
+        equipe_a=e1,
+        equipe_b=e2,
+        statut=StatutMatch.A_PLANIFIER,
+    )
+
+    with pytest.raises(Exception):
+        generer_matchs_pour_phase_globale(phase2)
