@@ -91,6 +91,30 @@ Chaque app respecte **strictement** les couches suivantes :
 * Tests des contraintes critiques
 * Lisibles, proches du langage métier
 
+## 3.6. API Admin
+
+L’application expose une API d’administration dédiée (`/api/admin/`).
+
+Caractéristiques :
+- Réservée aux utilisateurs staff
+- Accès via Django REST Framework
+- Actions métier explicites (générer, valider, clôturer, swap, forfait)
+
+Les endpoints admin :
+- n’implémentent aucune règle métier
+- délèguent systématiquement aux services
+- servent de couche de pilotage fonctionnel
+
+## 3.7. Règles métier vs règles de process
+
+- Les règles métier définissent ce qui est vrai dans le tournoi.
+- Les règles de process définissent ce qui est autorisé à un instant donné.
+
+Les règles de process :
+- peuvent évoluer
+- sont souvent appliquées lors d’actions (clôture, génération)
+- ne modifient pas le modèle de données
+
 ---
 
 ## 4. Concepts métier principaux
@@ -188,7 +212,7 @@ Les modifications manuelles sont possibles mais **strictement contrôlées**.
 
 * Générés à partir des équipes validées
 * Par sous-phase
-* Taille des groupes : 3 à 5 équipes
+* La taille des groupes est définie précisément dans `RULES_ENGINE.md`.
 * Génération automatique + ajustement manuel possible
 
 ### 5.2. Matchs
@@ -252,3 +276,11 @@ Cette architecture permet sans refonte majeure :
 ## 9. Validation
 
 Ce document est valide tant qu’aucune règle structurante ne le contredit.
+
+## 10. Points volontairement non finalisés
+
+Certaines règles sont volontairement laissées ouvertes :
+- passage Phase 1 → Phase 2 en cas d’effectif impair
+- arbitrage admin pour certaines décisions
+
+Ces règles seront définies avant implémentation définitive.

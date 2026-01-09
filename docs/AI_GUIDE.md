@@ -26,6 +26,10 @@ Ce fichier est **prioritaire** sur toute autre documentation.
 * Frontend : **hors périmètre** tant que non explicitement demandé
 * Base de données : **SQLite** (simplicité, évolutivité ultérieure)
 * Public cible : **organisateurs français**, non techniques
+* API :
+  * API publique : à définir plus tard
+  * API admin : prioritaire, sécurisée (is_staff)
+
 
 ---
 
@@ -130,6 +134,7 @@ Les fichiers suivants doivent exister et être maintenus :
 4. `RULES_ENGINE.md`
 5. `CHECKLIST_TODOLIST_ROADMAP.md`
 6. `README.md`
+7. `API_REFERENCE.md` (endpoints admin et règles associées)
 
 ### 6.2. Mise à jour
 

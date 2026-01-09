@@ -11,6 +11,17 @@ Il définit :
 
 ---
 
+## 0. Statut des règles
+
+Chaque règle appartient à l’un des statuts suivants :
+
+- **Règle stricte** : doit toujours être respectée (erreur si violée)
+- **Règle process** : bloque une action métier (ex: clôture) si non respectée
+- **Objectif souple** : appliqué “au mieux” sans bloquer l’exécution
+- **Règle future** : validée métier mais non implémentée à ce stade
+
+Les règles non figées sont explicitement marquées comme telles.
+
 ## 1. Définitions rapides
 
 ### Edition
@@ -71,12 +82,21 @@ Statut d’équipe :
 
 ### 2.5 Groupes
 
-* **Minimum 8 équipes** pour pouvoir démarrer un tournoi / une sous-phase en groupes
-* **Interdiction de créer des groupes de 3 équipes**
-* Une équipe affectée à un groupe doit :
+Règles générales :
 
-  * appartenir à la même édition que le groupe
-  * appartenir au même tournoi que la sous-phase du groupe
+- Une équipe affectée à un groupe doit :
+  - appartenir à la même édition que le groupe
+  - appartenir au même tournoi que la sous-phase du groupe
+
+Les règles de taille des groupes dépendent de la phase :
+
+- **Phase 1** :
+  - minimum 8 équipes pour démarrer
+  - **interdiction stricte des groupes de 3 équipes**
+
+- **Phase 2 (Challenge / Consolante)** :
+  - les groupes de 3 équipes sont **autorisés**
+  - cette flexibilité permet de gérer les effectifs réduits après sélection
 
 ### 2.6 Matchs (phases de groupes)
 
@@ -161,30 +181,38 @@ Pour chaque tournoi (3) :
 
 ## 4.2 Génération des groupes (nouvelles règles)
 
-### Entrée
+### 4.2.1 Génération des groupes – Phase 1
 
-* une `SousPhase`
-* liste des équipes **VALIDEE** de ce tournoi et de cette édition
+Préconditions strictes :
 
-### Préconditions strictes
+- minimum 8 équipes
+- **aucun groupe de 3 équipes autorisé**
 
-* si nombre d’équipes < 8 : génération impossible (erreur métier)
-* aucune génération ne doit produire un groupe de 3 équipes
+Règles de découpage (strictes) :
 
-### Sortie
+- 8 équipes → 2 groupes de 4
+- 9 équipes → 1 groupe de 4 et 1 groupe de 5
+- 10 équipes → 2 groupes de 5
+- 11 équipes → inscriptions bloquées à 10 tant qu’une 12e équipe n’est pas inscrite
+- ≥12 équipes → groupes de 4 et 5 uniquement
 
-* n groupes composés uniquement de tailles autorisées selon les cas ci-dessous
+### 4.2.2 Génération des groupes – Phase 2 (Challenge / Consolante)
 
-### Règles de découpage (strictes)
+Objectif :
 
-Soit N le nombre d’équipes validées pour la sous-phase :
+- permettre la continuité du tournoi malgré une réduction du nombre d’équipes
 
-* **N = 8** → 2 groupes de 4
-* **N = 9** → 1 groupe de 4 et 1 groupe de 5
-* **N = 10** → 2 groupes de 5
-* **N = 11** → **inscriptions bloquées à 10** : la 11e équipe doit être **refusée** tant qu’une 12e équipe ne s’est pas inscrite
-  (objectif : éviter 3/3/5 ou autres répartitions interdites)
-* **N ≥ 12** → groupes de **4 et 5** uniquement, en favorisant 4 quand possible, sans jamais créer de 3
+Règles spécifiques :
+
+- les groupes de **3 équipes sont autorisés**
+- un seul groupe est autorisé si le nombre d’équipes est insuffisant pour en créer plusieurs
+- aucune contrainte de minimum de 8 équipes ne s’applique en phase 2
+
+Notes :
+
+- cette souplesse est volontaire
+- elle permet de gérer proprement les effectifs après la Phase 1
+- la génération reste sous contrôle administrateur en cas de doute
 
 ### Ajustements manuels autorisés
 
@@ -290,11 +318,9 @@ Permettre d’insérer une ou plusieurs pauses dans le planning, par exemple :
 
 ---
 
-## 6. Classement (inchangé)
+## 6. Classement
 
-Tie-break :
-
-Tie-break :
+### Règles de départage (tie-break)
 
 1. Différence de points
 2. Points marqués
@@ -303,11 +329,19 @@ Tie-break :
 
 ⚠️ En cas d’égalité à ≥3 équipes, l’absence de décision manuelle bloque la clôture de la phase.
 
+
 ---
 
 ## 7. Passage Phase 1 → Phase 2 (inchangé à ce stade)
 
 Objectif : 50% Challenge / 50% Consolante (au mieux)
+
+⚠️ Règle non figée à ce stade
+
+- En cas de nombre impair d’équipes, le 50/50 exact n’est pas toujours possible.
+- La décision finale d’affectation (Challenge / Consolante) revient à l’administrateur.
+- Aucune génération automatique ne doit forcer une répartition sans validation admin.
+- L’implémentation complète de cette règle est volontairement reportée.
 
 ---
 
@@ -353,3 +387,9 @@ Objectif : 50% Challenge / 50% Consolante (au mieux)
 ### 2026-01-08
 
 - Clôture de phase : blocage obligatoire si égalité à ≥3 équipes sans `rang_manuel` (règle process).
+
+### 2026-01-09
+
+- Clarification règles Phase 2 :
+  - l’interdiction des groupes de 3 équipes s’applique **uniquement à la Phase 1**
+  - les groupes de 3 équipes sont désormais **autorisés en Phase 2 (Challenge / Consolante)**

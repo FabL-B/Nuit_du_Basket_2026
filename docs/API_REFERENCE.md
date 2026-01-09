@@ -1,309 +1,315 @@
-Très bien.
-Voici **une documentation API claire, exhaustive et structurée**, listant **les endpoints existants** et **ceux prévus**, sans ambiguïté sur l’état d’avancement.
+# API_REFERENCE.md
 
-👉 Ce document est conçu pour devenir **`API_REFERENCE.md`** (ou `API_ENDPOINTS.md` si tu préfères).
+Ce document liste les **endpoints actuels** et les **endpoints prévus** de l’API *Nuit du Basket*.
 
----
+* Base API (actuelle) : `/api/admin/`
+* Public : **non implémenté** (backend uniquement pour le moment)
 
-# 📡 API Nuit du Basket – Référence des endpoints
+## Conventions
 
-Base URL (actuelle) :
+* Tous les endpoints ci-dessous sont **réservés aux admins** (permission : `IsAdminUser` / `is_staff=True`).
+* La logique métier se trouve dans des **services** (pas dans les views).
+* Les endpoints marqués **En pause** ne doivent pas être implémentés tant que les règles métier associées ne sont pas figées.
 
-```
-/api/admin/
-```
+## Statuts
 
-⚠️ Tous les endpoints listés ici sont **réservés aux admins** (`is_staff=True`).
-
----
-
-## 1. Éditions
-
-### ✅ GET /api/admin/editions/
-
-Lister toutes les éditions.
-
-**Statut :** implémenté
-**Permissions :** admin
-**Réponse :**
-
-* id
-* nom
-* date_evenement
-* heure_debut
-* duree_creneau_minutes
-* cree_le
-* modifie_le
+* **Implémenté** : endpoint existant et testé
+* **Prévu** : endpoint à venir
+* **En pause** : bloqué tant que les règles ne sont pas figées
 
 ---
 
-### ✅ POST /api/admin/editions/
+## 1 Éditions
 
-Créer une édition.
+### GET `/api/admin/editions/`
 
-**Statut :** implémenté
-**Payload :**
+* Rôle : lister les éditions
+* Statut : **Implémenté**
 
-```json
-{
-  "nom": "NDB 2026",
-  "date_evenement": "2026-06-20",
-  "heure_debut": "14:00",
-  "duree_creneau_minutes": 15
-}
-```
+### POST `/api/admin/editions/`
 
----
+* Rôle : créer une édition
+* Statut : **Implémenté**
 
-### 🔜 PUT /api/admin/editions/{id}/
+### GET `/api/admin/editions/{id}/`
 
-Modifier une édition.
+* Rôle : lire une édition
+* Statut : **Implémenté**
 
-**Statut :** prévu
-⚠️ À bloquer si tournoi déjà lancé (règle future)
+### PUT/PATCH `/api/admin/editions/{id}/`
 
----
+* Rôle : modifier une édition
+* Statut : **Implémenté**
+* Note (future règle process) : certaines modifications pourront être bloquées quand le tournoi a démarré
 
-## 2. Tournois (Rookie / Loisir / Compétiteur)
+### DELETE `/api/admin/editions/{id}/`
 
-### ✅ GET /api/admin/tournois/
-
-Lister les tournois d’une édition.
-
-**Statut :** implémenté
-**Champs :**
-
-* id
-* edition
-* code (`ROOKIE`, `LOISIR`, `COMPETITEUR`)
-* libelle
+* Rôle : supprimer une édition
+* Statut : **Implémenté**
+* Note (future règle process) : suppression probablement interdite après inscriptions/matchs
 
 ---
 
-### 🔜 PUT /api/admin/tournois/{id}/
+## 2 Tournois (Rookie / Loisir / Compétiteur)
 
-Modifier libellé / activation.
+Les tournois existent **toujours** en 3 codes (pas de création libre).
 
-**Statut :** prévu
-⚠️ Les codes sont **figés** (pas de CRUD libre)
+### GET `/api/admin/tournois/`
 
----
+* Rôle : lister les tournois (généralement filtrés par édition)
+* Statut : **Implémenté**
 
-## 3. Équipes & joueurs
+### GET `/api/admin/tournois/{id}/`
 
-### 🔜 POST /api/admin/equipes/
+* Rôle : lire un tournoi
+* Statut : **Prévu** (optionnel selon besoins)
 
-Créer une équipe (brouillon).
+### PUT/PATCH `/api/admin/tournois/{id}/`
 
----
-
-### 🔜 PUT /api/admin/equipes/{id}/
-
-Modifier une équipe.
+* Rôle : modifier le `libelle` (et potentiellement un futur `est_actif`)
+* Statut : **Prévu**
 
 ---
 
-### 🔜 POST /api/admin/equipes/{id}/valider/
+## 3 Inscriptions : équipes et joueurs
 
-Valider l’inscription (règles min/max, âge Rookie).
+### Équipes
 
----
+### GET `/api/admin/equipes/`
 
-### 🔜 DELETE /api/admin/equipes/{id}/
+* Rôle : lister les équipes (filtres : édition, tournoi, statut…)
+* Statut : **Prévu**
 
-Supprimer une équipe (si autorisé).
+### POST `/api/admin/equipes/`
 
----
+* Rôle : créer une équipe (souvent en BROUILLON)
+* Statut : **Prévu**
 
-## 4. Phases
+### GET `/api/admin/equipes/{id}/`
 
-### 🔜 POST /api/admin/phases/
+* Rôle : lire une équipe
+* Statut : **Prévu**
 
-Créer une phase globale (P1 / P2 / Finale).
+### PUT/PATCH `/api/admin/equipes/{id}/`
 
----
+* Rôle : modifier une équipe
+* Statut : **Prévu**
 
-### 🔜 POST /api/admin/phases/{id}/ouvrir/
+### POST `/api/admin/equipes/{id}/valider/`
 
-Ouvrir une phase (statut → OUVERTE).
+* Rôle : valider une inscription (contrôles min/max, âge Rookie, etc.)
+* Statut : **Prévu**
 
----
+### DELETE `/api/admin/equipes/{id}/`
 
-### ⛔ POST /api/admin/phases/{id}/cloturer/
+* Rôle : supprimer une équipe
+* Statut : **Prévu** (avec règles process à définir selon état tournoi)
 
-Clôturer une phase globale.
+### Joueurs
 
-**Statut :** en pause
-Dépend de :
+### GET `/api/admin/joueurs/`
 
-* règles Phase 2
-* décision admin en cas d’impair
-* départages validés
+* Rôle : lister les joueurs (filtres : édition, tournoi, équipe…)
+* Statut : **Prévu**
 
----
+### POST `/api/admin/joueurs/`
 
-## 5. Groupes
+* Rôle : ajouter un joueur à une équipe
+* Statut : **Prévu**
 
-### ✅ GET /api/admin/groupes/
+### PUT/PATCH `/api/admin/joueurs/{id}/`
 
-Lister les groupes d’une sous-phase.
+* Rôle : modifier un joueur
+* Statut : **Prévu**
 
----
+### DELETE `/api/admin/joueurs/{id}/`
 
-### ✅ POST /api/admin/groupes/generer/
-
-Générer automatiquement les groupes d’une sous-phase.
-
-**Statut :** implémenté
-**Contraintes :**
-
-* min 8 équipes
-* pas de groupes de 3
-* cas 8/9/10/11/12+ gérés
+* Rôle : supprimer un joueur
+* Statut : **Prévu** (avec règles process à définir)
 
 ---
 
-### ✅ POST /api/admin/groupes/swap-equipes/
+## 4 Phases (structure)
 
-Interchanger deux équipes entre deux groupes.
+### GET `/api/admin/phases-globales/`
 
-**Statut :** implémenté
-**Payload :**
+* Rôle : lister les phases globales
+* Statut : **Prévu**
 
-```json
-{
-  "groupe_a_id": 1,
-  "equipe_a_id": 10,
-  "groupe_b_id": 2,
-  "equipe_b_id": 14
-}
-```
+### POST `/api/admin/phases-globales/`
 
----
+* Rôle : créer une phase globale (Phase 1 / Phase 2 / Finale)
+* Statut : **Prévu**
 
-## 6. Matchs
+### POST `/api/admin/phases-globales/{id}/ouvrir/`
 
-### 🔜 POST /api/admin/matchs/generer/
+* Rôle : passer une phase globale en OUVERTE
+* Statut : **Prévu**
 
-Générer tous les matchs d’une phase globale.
+### POST `/api/admin/phases-globales/{id}/cloturer/`
 
----
+* Rôle : clôturer une phase globale (+ toutes ses sous-phases)
+* Statut : **En pause**
+* Dépendances : règles Phase 2 non figées
 
-### 🔜 GET /api/admin/matchs/
+### GET `/api/admin/sous-phases/`
 
-Lister les matchs (filtres à venir).
+* Rôle : lister les sous-phases (par phase globale / tournoi / branche)
+* Statut : **Prévu**
 
 ---
 
-## 7. Planning
+## 5 Groupes
 
-### ✅ POST /api/admin/phases/{id}/planning/
+### GET `/api/admin/groupes/`
 
-Générer le planning de la phase globale.
+* Rôle : lister les groupes (souvent filtrés par sous-phase)
+* Statut : **Implémenté**
 
-**Statut :** implémenté
-**Réponse :**
+### GET `/api/admin/groupes/{id}/`
 
-```json
-{
-  "matchs_planifies": 48,
-  "creneaux_utilises": 6,
-  "metriques": {...}
-}
-```
+* Rôle : lire un groupe
+* Statut : **Prévu** (optionnel)
 
----
+### POST `/api/admin/groupes/generer/`
 
-### 🔜 POST /api/admin/planning/pauses/
+* Rôle : générer automatiquement les groupes pour une sous-phase
+* Statut : **Implémenté**
+* Note : la génération liée à la **Phase 2** est **en pause** tant que les règles de répartition Challenge/Consolante ne sont pas figées
 
-Ajouter une pause nommée (concours de shoot).
+### POST `/api/admin/groupes/swap-equipes/`
 
----
+* Rôle : interchanger deux équipes entre deux groupes de la même sous-phase
+* Statut : **Implémenté**
 
-## 8. Feuilles de match
+### DELETE `/api/admin/groupes/{id}/`
 
-### ✅ POST /api/admin/matchs/{id}/feuille/
-
-Créer ou récupérer la feuille de match.
-
-**Statut :** implémenté
-**Réponse :**
-
-* sheet_code
-* match_id
+* Rôle : supprimer un groupe
+* Statut : **Prévu** (process à cadrer)
 
 ---
 
-### 🔜 GET /api/admin/matchs/{id}/feuille/
+## 6 Matchs
 
-Exporter la feuille (PDF / imprimable).
+### GET `/api/admin/matchs/`
 
----
+* Rôle : lister les matchs (filtres : édition, phase, sous-phase, groupe, statut, terrain, créneau…)
+* Statut : **Implémenté** (si endpoint déjà créé) / sinon **Prévu**
 
-## 9. Scores
+### POST `/api/admin/matchs/generer/`
 
-### ✅ POST /api/admin/matchs/{id}/score/
+* Rôle : générer tous les matchs d’une phase globale (tous tournois confondus)
+* Statut : **Implémenté** (si endpoint déjà créé) / sinon **Prévu**
 
-Saisir un score (non validé).
+### POST `/api/admin/matchs/{id}/planifier/`
 
----
-
-### ✅ POST /api/admin/matchs/{id}/score/valider/
-
-Valider le score (verrouillage + recalcul classement).
-
----
-
-### 🔜 POST /api/admin/matchs/{id}/forfait/
-
-Déclarer un forfait.
-
-**Payload possible :**
-
-```json
-{
-  "type": "FORFAIT_A" | "FORFAIT_B" | "DOUBLE_FORFAIT"
-}
-```
+* Rôle : modifier manuellement terrain/créneau d’un match
+* Statut : **Prévu**
 
 ---
 
-## 10. Classements
+## 7 Planning
 
-### 🔜 GET /api/admin/groupes/{id}/classement/
+### POST `/api/admin/phases-globales/{id}/planning/`
 
-Afficher le classement du groupe.
+* Rôle : générer le planning (affectation créneau + terrain) pour une phase globale
+* Statut : **Implémenté**
+* Réponse attendue :
+
+  * `matchs_planifies`
+  * `creneaux_utilises`
+  * `metriques` (si activé)
+
+### GET `/api/admin/creneaux/`
+
+* Rôle : lister les créneaux d’une édition
+* Statut : **Prévu**
+
+### GET `/api/admin/terrains/`
+
+* Rôle : lister les terrains d’une édition
+* Statut : **Prévu**
+
+### POST `/api/admin/pauses-planning/`
+
+* Rôle : créer une pause nommée (concours de shoot)
+* Statut : **Prévu**
+
+### PUT/PATCH `/api/admin/pauses-planning/{id}/`
+
+* Rôle : modifier / activer / désactiver une pause
+* Statut : **Prévu**
 
 ---
 
-### 🔜 PUT /api/admin/classements/{id}/rang-manuel/
+## 8 Feuilles de match
 
-Départage manuel (égalité ≥ 3 équipes).
+### POST `/api/admin/matchs/{id}/feuille/`
 
----
+* Rôle : créer ou récupérer la feuille de match (MatchSheet)
+* Statut : **Implémenté**
+* Note : endpoint idempotent (si déjà existante, renvoie la feuille)
 
-## 11. Phase 2 (en pause)
+### GET `/api/admin/matchs/{id}/feuille/`
 
-### ⛔ POST /api/admin/phases/{id}/phase2/
-
-Générer Challenge / Consolante.
-
-**Bloqué tant que règles non figées.**
-
----
-
-## 🔒 Sécurité & principes
-
-* Authentification : DRF
-* Permissions : `IsAdminUser`
-* Aucune logique métier dans les views
-* Services transactionnels
-* Tests systématiques
+* Rôle : récupérer les infos de feuille (et futur export PDF)
+* Statut : **Prévu**
 
 ---
 
-Si tu veux, au prochain message je peux :
+## 9 Scores
 
-* transformer ça en **fichier prêt à commit**
-* générer **OpenAPI / Swagger**
-* ou faire un **schéma visuel des flux API**
+### POST `/api/admin/matchs/{id}/score/`
+
+* Rôle : saisir un score (non validé)
+* Statut : **Implémenté**
+
+### POST `/api/admin/matchs/{id}/score/valider/`
+
+* Rôle : valider le score (verrouillage + match terminé + recalcul classement)
+* Statut : **Implémenté**
+
+### POST `/api/admin/matchs/{id}/forfait/`
+
+* Rôle : déclarer un forfait (FORFAIT_A / FORFAIT_B / DOUBLE_FORFAIT)
+* Statut : **Prévu**
+
+---
+
+## 10 Classements
+
+### GET `/api/admin/groupes/{id}/classement/`
+
+* Rôle : obtenir le classement d’un groupe
+* Statut : **Prévu**
+
+### PUT/PATCH `/api/admin/classements/{id}/rang-manuel/`
+
+* Rôle : saisir le départage manuel en cas d’égalité ≥3
+* Statut : **Prévu**
+
+---
+
+## 11 Phase 2 (Challenge / Consolante)
+
+### POST `/api/admin/phases-globales/{id}/generer-phase2/`
+
+* Rôle : générer la phase 2 depuis la phase 1 (création sous-phases, affectations, groupes)
+* Statut : **En pause**
+* Raison : règles de répartition (50/50 + cas impairs + décision admin) **non figées**
+
+---
+
+## OpenAPI / Swagger (documentation auto)
+
+Si `drf-spectacular` est activé :
+
+* Schéma OpenAPI (YAML/JSON) : `/api/schema/`
+* Swagger UI : `/api/docs/`
+
+---
+
+## Historique
+
+* 2026-01-07 : inventaire initial des endpoints admin (édition, tournois, groupes, planning, feuilles, scores)
+* 2026-01-08 : ajout des endpoints prévus (inscriptions, phases, forfaits, classements) et marquage des blocs "en pause" (Phase 2, clôture phase)

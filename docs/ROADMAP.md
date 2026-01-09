@@ -1,168 +1,147 @@
-# 📄 `ROADMAP.md` (mise à jour)
+# ROADMAP — Nuit du Basket (mise à jour)
 
-Cette roadmap reflète **l’état réel et contractuel** du projet après l’ajout des **nouvelles règles métier**.
-Elle est alignée avec :
+## Phase 1 — Fondations techniques ✅
 
-* `RULES_ENGINE.md`
-* `DATA_MODEL.md`
-
----
-
-## 1. Légende des statuts
-
-* ⬜ À faire
-* 🟨 En cours
-* ✅ Validé
-* ⛔ Bloqué (règles modifiées / à intégrer)
-* 🔁 À revoir
+* 1.1 Initialisation projet Django / DRF ✅
+* 1.2 Architecture modulaire (apps métier) ✅
+* 1.3 Modèles de base (Edition, Tournoi, Equipe) ✅
+* 1.4 Contraintes DB & validations métier de base ✅
 
 ---
 
-## 2. Phase 0 — Fondations du projet
+## Phase 2 — Groupes & Inscriptions ✅
 
-| Bloc | Description                        | Statut |
-| ---- | ---------------------------------- | ------ |
-| 0.1  | Initialisation repo + Django + DRF | ✅      |
-| 0.2  | AI_GUIDE.md                        | ✅      |
-| 0.3  | ARCHITECTURE.md                    | ✅      |
-| 0.4  | DATA_MODEL.md                      | ✅      |
-| 0.5  | RULES_ENGINE.md                    | ✅      |
-| 0.6  | ROADMAP.md                         | ✅      |
-| 0.7  | README.md                          | ✅      |
+* 2.1 Règles de tailles de groupes Phase 1 (min 8, 4/5 uniquement) ✅
+* 2.2 Validation équipes par tournoi (bornes min/max) ✅
+* 2.3 Contrôle d’âge Rookie (≥ 15 ans) ✅
+* 2.4 Génération automatique des groupes Phase 1 (v2) ✅
+* 2.5 Swap manuel d’équipes entre groupes (même sous-phase) ✅
+
+> ℹ️ **Note** : l’interdiction des groupes de 3 est désormais **explicitement limitée à la Phase 1**.
 
 ---
 
-## 3. Phase 1 — Inscriptions & structure tournoi
+## Phase 3 — Matchs, Classements & Planning ✅
 
-### 3.1 Éditions
-
-| Bloc | Description                                                     | Statut |
-| ---- | --------------------------------------------------------------- | ------ |
-| 1.1  | Modèle Edition                                                  | ✅      |
-| 1.2  | API CRUD Edition (admin)                                        | ⬜      |
-| 1.3  | Création automatique des 3 tournois à la création d’une édition | ⬜      |
-
----
-
-### 3.2 Tournois
-
-| Bloc | Description                                    | Statut |
-| ---- | ---------------------------------------------- | ------ |
-| 1.4  | Modèle Tournoi (Rookie / Loisir / Compétiteur) | ✅      |
-| 1.5  | Garde-fou : exactement 3 tournois par édition  | ⬜      |
+* 3.1 Génération des matchs par phase globale (round-robin groupe) ✅
+* 3.2 Modèle Match / Score / Feuille de match ✅
+* 3.3 Validation score verrouillante + recalcul classement auto ✅
+* 3.4 Classement (points, diff, égalités) + recalcul sécurisé ✅
+* 3.5 Génération planning phase globale (créneaux + terrains) ✅
+* 3.6 Contraintes strictes planning (collisions, doublons, simultanéité) ✅
+* 3.7 Heuristiques planning (enchaînements, indoor/outdoor, repos) ✅
+* 3.8 Pauses nommées planning + recalcul créneaux ✅
 
 ---
 
-### 3.3 Inscriptions
+## Phase 4 — Transitions & Phases avancées 🟨
 
-| Bloc | Description                                                  | Statut |
-| ---- | ------------------------------------------------------------ | ------ |
-| 1.6  | Modèles Équipe / Joueur                                      | ✅      |
-| 1.7  | Validation équipe (min/max joueurs par tournoi)              | ✅      |
-| 1.8  | Contrôle d’âge Rookie (≥ 15 ans)                             | ✅      |
-| 1.9  | Refus inscription si seuil tournoi invalide (ex: 11 équipes) | ✅      |
-| 1.10 | API CRUD Équipe (brouillon)                                  | ⬜      |
-| 1.11 | API CRUD Joueur                                              | ⬜      |
+### 4.1 Clôture Phase 1 🟨
 
----
+* Tous les matchs doivent être finalisés
+* Classements recalculés et cohérents
+* Égalités ≥ 3 équipes :
 
-## 4. Phase 2 — Phases & groupes
-
-### 4.1 Phases
-
-| Bloc | Description                            | Statut |
-| ---- | -------------------------------------- | ------ |
-| 2.1  | Modèles PhaseGlobale / SousPhase       | ✅      |
-| 2.2  | Génération automatique des sous-phases | ✅      |
-| 2.3  | Clôture PhaseGlobale (+ sous-phases)   | ✅      |
+  * **rang_manuel obligatoire**
+  * clôture refusée tant que non renseigné
 
 ---
 
-### 4.2 Groupes
+### 4.2 Passage Phase 1 → Phase 2 🟨 (règles figées, implémentation en pause)
 
-| Bloc | Description                                             | Statut |
-| ---- | ------------------------------------------------------- | ------- |
-| 2.4  | Modèles Groupe / GroupeEquipe                           | ✅      |
-| 2.5  | Génération automatique des groupes (anciennes règles)   | ⛔      |
-| 2.5b | Génération groupes (min 8, pas de 3, cas 9/10/11/12+)   | ✅      |
-| 2.6  | Ajustement manuel des groupes (swap contrôlé)           | ✅      |
+* Phase 2 composée de deux branches :
 
----
+  * Challenge
+  * Consolante
+* Classement Phase 1 utilisé comme référence
+* Cas pair :
 
-## 5. Phase 3 — Matchs & planning
+  * répartition automatique 50 % / 50 %
+* Cas impair :
 
-### 5.1 Matchs
-
-| Bloc | Description                               | Statut |
-| ---- | ----------------------------------------- | ------ |
-| 3.1  | Modèle Match                              | ✅      |
-| 3.2  | Génération des matchs (par phase globale) | ✅      |
-| 3.3  | Modèle MatchSheet                         | ✅      |
-| 3.4  | Modèle Score                              | ✅      |
+  * **décision admin obligatoire**
+  * choix explicite de l’équipe surnuméraire (Challenge ou Consolante)
 
 ---
 
-### 5.2 Planning
+### 4.3 Groupes Phase 2 🟨 (règles clarifiées)
 
-| Bloc | Description                                                | Statut |
-| ---- | ---------------------------------------------------------- | ------ |
-| 3.5  | Modèles Terrain / Créneau                                  | ✅      |
-| 3.6  | Génération planning (créneaux + terrains)                  | ✅      |
-| 3.7  | Règles souples (indoor/outdoor, éviter matchs consécutifs) | ✅      |
-| 3.8  | Pauses nommées dans le planning (concours, événements)     | ✅      |
-| 3.9  | Ajustement manuel du planning                              | ⬜      |
+* **Groupes de 3 équipes autorisés**
+* Groupes de 4 ou 5 toujours autorisés
+* Une branche peut contenir :
 
----
+  * un seul groupe
+  * ou plusieurs groupes
+* Aucun minimum strict d’équipes requis
 
-## 6. Phase 4 — Classements & transitions
-
-| Bloc | Description                                        | Statut |
-| ---- | -------------------------------------------------- | ------ |
-| 4.1  | Modèle Classement                                  | ✅      |
-| 4.2  | Calcul automatique du classement                   | ✅      |
-| 4.3  | Tie-breaks (diff / points / confrontation directe) | ✅      |
-| 4.4  | Passage Phase 1 → Phase 2                          | ⛔      |
-| 4.5  | Phases finales (brackets manuels assistés)         | ⛔      |
+> ⚠️ Implémentation volontairement en pause tant que :
+>
+> * les tests Phase 2 ne sont pas écrits
+> * l’API admin associée n’est pas définie
 
 ---
 
-## 7. Phase 5 — API & sécurité
+### 4.4 Génération matchs Phase 2 ⬜
 
-| Bloc | Description                       | Statut |
-| ---- | --------------------------------- | ------ |
-| 5.1  | Permissions admin globales        | ⬜      |
-| 5.2  | Endpoints DRF structurés          | ⬜      |
-| 5.3  | Validation des transitions d’état | ⬜      |
+* Round-robin intra-groupe
+* Règles identiques à Phase 1
 
 ---
 
-## 8. Phase 6 — Qualité & livrables
+### 4.5 Phase Finale ⬜
 
-| Bloc | Description                  | Statut |
-| ---- | ---------------------------- | ------ |
-| 6.1  | Tests complets règles métier | ⬜      |
-| 6.2  | Documentation API            | ⬜      |
-| 6.3  | Revue finale README          | ⬜      |
+* Règles non définies
+* Hors scope actuel
 
 ---
 
-## 9. Règles d’évolution de la roadmap
+## Phase 5 — API Admin & Sécurité 🟨
 
-* Un bloc passe à **✅** uniquement si :
+* 5.1 Permissions admin globales (is_staff) ✅
+* 5.2 Endpoints admin CRUD (Editions, Tournois, Phases, Groupes, Matchs) 🟨
+* 5.3 Actions admin métier :
 
-  * le code est implémenté
-  * les tests passent
-  * la documentation est à jour
-* Un bloc passe à **⛔** dès qu’une règle métier change.
-* Toute nouvelle règle implique :
+  * swap équipes
+  * génération planning
+  * génération feuilles de match
+  * forfaits
+* 5.4 Documentation OpenAPI (drf-spectacular) 🟨
 
-  * `RULES_ENGINE.md`
-  * `DATA_MODEL.md` (si impact structurel)
-  * cette roadmap
+---
+
+## Phase 6 — Qualité & Documentation 🟨
+
+* 6.1 Tests unitaires & intégration (pytest) 🟨
+* 6.2 RULES_ENGINE.md (règles métier figées) 🟨
+* 6.3 DATA_MODEL.md (modèle exhaustif) 🟨
+* 6.4 API_REFERENCE.md (endpoints actuels + à venir) 🟨
+* 6.5 AI_GUIDE.md / CONTRIBUTING.md 🟨
 
 ---
 
 ## Historique
 
-* 2026-01-07 :
-  Bloc 2.5 suspendu et remplacé par 2.5b suite aux nouvelles règles de groupes (min 8 équipes, pas de groupes de 3, cas 9/10/11/12+), ajout des règles d’âge Rookie, tailles d’équipes par tournoi, et pauses nommées dans le planning.
+### 2026-01-07
+
+* Groupes Phase 1 (min 8, 4/5 uniquement)
+* Validation équipes + âge Rookie
+* Génération matchs, scores, classements
+* Planning global + heuristiques
+* Pauses nommées planning
+
+### 2026-01-08
+
+* Clarification officielle Phase 2 :
+
+  * groupes de 3 autorisés
+  * décision admin requise en cas impair
+* Blocage volontaire implémentation Phase 2
+* API admin en cours (DRF + OpenAPI)
+
+---
+
+### Légende
+
+* ✅ Terminé
+* 🟨 Règles figées / implémentation partielle
+* ⬜ À faire
