@@ -2,13 +2,32 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample
 
-from groupes.models import Groupe, GroupeEquipe
 from api_admin.serializers.groupes import GroupeSerializer
+from api_admin.schema import TAG_GROUPES, REP_400, REP_403, REP_404
 
 from groupes.services_swap import swap_equipes_entre_groupes, ErreurSwapGroupes
+from groupes.models import Groupe, GroupeEquipe
 
 
+@extend_schema_view(
+    list=extend_schema(
+        tags=[TAG_GROUPES],
+        summary="Lister les groupes",
+        description=(
+            "Retourne les groupes existants.\n\n"
+            "Usage typique : filtrer par sous_phase pour voir uniquement les groupes d'une sous-phase."
+        ),
+        responses={200: None, 403: REP_403},
+    ),
+    retrieve=extend_schema(
+        tags=[TAG_GROUPES],
+        summary="Lire un groupe",
+        description="Retourne le détail d'un groupe et (selon serializer) ses équipes associées.",
+        responses={200: None, 403: REP_403, 404: REP_404},
+    ),
+)
 class GroupeViewSet(viewsets.ModelViewSet):
     queryset = (
         Groupe.objects.all()
@@ -36,6 +55,31 @@ class GroupeViewSet(viewsets.ModelViewSet):
 
         return qs
 
+    @extend_schema(
+        tags=[TAG_GROUPES],
+        summary="Interchanger deux équipes entre deux groupes",
+        description=(
+            "Interchange deux équipes entre deux groupes.\n\n"
+            "Contraintes strictes :\n"
+            "- les deux groupes doivent être dans la même sous-phase\n"
+            "- les équipes doivent appartenir à la même édition et au même tournoi (cohérence modèle)\n"
+            "- opération atomique (transaction)\n\n"
+            "Usage typique : ajustement manuel après génération automatique."
+        ),
+        examples=[
+            OpenApiExample(
+                "Exemple swap",
+                value={
+                    "groupe_a_id": 1,
+                    "equipe_a_id": 10,
+                    "groupe_b_id": 2,
+                    "equipe_b_id": 14,
+                },
+                request_only=True,
+            )
+        ],
+        responses={200: None, 400: REP_400, 403: REP_403, 404: REP_404},
+    )
     @action(detail=False, methods=["post"], url_path="swap-equipes")
     def swap_equipes(self, request):
         """
