@@ -53,30 +53,119 @@ def _calculer_tailles_groupes_v2(nb_equipes: int) -> List[int]:
     )
 
 
-def _creer_groupes_et_affectations(
-    sous_phase: SousPhase, equipes: Sequence[Equipe]
-) -> List[Groupe]:
-    nb_equipes = len(equipes)
-    tailles = _calculer_tailles_groupes_v2(nb_equipes)
+def _calculer_tailles_groupes_phase2(nb_equipes: int) -> list[int]:
+    """
+    Phase 2 : groupes de 3/4/5 autorisés.
+    On accepte un seul groupe si l'effectif est faible.
 
-    groupes_crees: List[Groupe] = []
+    Règles simples et déterministes :
+    - nb < 3 : génération impossible (un groupe doit avoir au moins 3 équipes)
+    - 3..5 : 1 groupe
+    - 6 : 3/3
+    - 7 : 3/4
+    - 8 : 4/4
+    - 9 : 4/5
+    - 10 : 5/5
+    - 11 : 3/4/4
+    - 12 : 4/4/4
+    - 13 : 4/4/5
+    - 14 : 4/5/5
+    - 15 : 5/5/5
+    - au-delà : on boucle en privilégiant 5 puis 4 puis 3.
+    """
+    if nb_equipes < 3:
+        raise ErreurGenerationGroupes("Génération impossible : minimum 3 équipes requis en Phase 2.")
+
+    # Cas simples (les plus fréquents en Phase 2)
+    mapping = {
+        3: [3],
+        4: [4],
+        5: [5],
+        6: [3, 3],
+        7: [3, 4],
+        8: [4, 4],
+        9: [4, 5],
+        10: [5, 5],
+        11: [3, 4, 4],
+        12: [4, 4, 4],
+        13: [4, 4, 5],
+        14: [4, 5, 5],
+        15: [5, 5, 5],
+    }
+    if nb_equipes in mapping:
+        return mapping[nb_equipes]
+
+    # Fallback générique (rare en Phase 2, mais propre)
+    tailles: list[int] = []
+    reste = nb_equipes
+    while reste > 0:
+        if reste >= 5:
+            # éviter de finir avec 1 ou 2
+            if reste in (6, 7, 8):
+                # gérés plus haut normalement, mais sécurise
+                break
+            tailles.append(5)
+            reste -= 5
+        elif reste == 4:
+            tailles.append(4)
+            reste -= 4
+        elif reste == 3:
+            tailles.append(3)
+            reste -= 3
+        else:
+            # ici reste vaut 1 ou 2 => on rééquilibre
+            raise ErreurGenerationGroupes(
+                "Génération Phase 2 impossible : répartition incohérente (reste 1 ou 2)."
+            )
+    # si on a cassé plus haut
+    if reste != 0:
+        return mapping[reste] if reste in mapping else tailles
+
+    return tailles
+
+
+def _creer_groupes_et_affectations(
+    sous_phase: SousPhase,
+    equipes: list[Equipe],
+    tailles: list[int] | None = None,
+) -> list[Groupe]:
+    """
+    Crée les groupes + affectations (GroupeEquipe) pour une sous-phase.
+
+    - Si tailles est None : on applique la règle Phase 1 v2 (min 8, 4/5, etc.)
+    - Si tailles est fourni : on utilise ces tailles (ex: Phase 2 = 3/4/5 autorisés)
+    """
+    nb_equipes = len(equipes)
+
+    if tailles is None:
+        # Comportement historique Phase 1 (tes tests existants)
+        tailles = _calculer_tailles_groupes_v2(nb_equipes)
+    else:
+        # Sécurité : cohérence simple
+        if sum(tailles) != nb_equipes:
+            raise ErreurGenerationGroupes(
+                f"Répartition invalide : {sum(tailles)} places pour {nb_equipes} équipes."
+            )
+
+    groupes_crees: list[Groupe] = []
     index_equipe = 0
 
     for idx, taille in enumerate(tailles):
-        groupe = Groupe.objects.create(
+        g = Groupe.objects.create(
             sous_phase=sous_phase,
             code=chr(ord("A") + idx),
         )
-        groupes_crees.append(groupe)
+        groupes_crees.append(g)
 
         for _ in range(taille):
             GroupeEquipe.objects.create(
-                groupe=groupe,
+                groupe=g,
                 equipe=equipes[index_equipe],
             )
             index_equipe += 1
 
     return groupes_crees
+
 
 
 @transaction.atomic
@@ -134,3 +223,22 @@ def generer_groupes_pour_sous_phase_avec_equipes(
         )
 
     return _creer_groupes_et_affectations(sous_phase, equipes)
+
+
+@transaction.atomic
+def generer_groupes_phase2_pour_sous_phase_avec_equipes(
+    sous_phase: SousPhase,
+    equipe_ids: list[int],
+) -> list[Groupe]:
+    if sous_phase.groupes.exists():
+        raise ErreurGenerationGroupes(
+            "Des groupes existent déjà pour cette sous-phase. Suppression manuelle requise avant régénération."
+        )
+
+    equipes = list(
+        Equipe.objects.filter(id__in=equipe_ids).order_by("id")
+    )
+    nb_equipes = len(equipes)
+    tailles = _calculer_tailles_groupes_phase2(nb_equipes)
+
+    return _creer_groupes_et_affectations(sous_phase, equipes, tailles=tailles)

@@ -16,7 +16,7 @@ from phases.models import (
     TypePhaseGlobale,
 )
 from tournois.models import CodeTournoi, Tournoi
-from groupes.services import generer_groupes_pour_sous_phase_avec_equipes
+from groupes.services import generer_groupes_pour_sous_phase_avec_equipes, generer_groupes_phase2_pour_sous_phase_avec_equipes
 
 
 class ErreurGenerationPhase2(ValueError):
@@ -214,8 +214,8 @@ def generer_phase2_depuis_phase1(
         )
 
         # Créer les groupes Phase 2
-        groupes_ch = generer_groupes_pour_sous_phase_avec_equipes(sp_challenge, ids_challenge)
-        groupes_co = generer_groupes_pour_sous_phase_avec_equipes(sp_consolante, ids_consolante)
+        groupes_ch = generer_groupes_phase2_pour_sous_phase_avec_equipes(sp_challenge, ids_challenge)
+        groupes_co = generer_groupes_phase2_pour_sous_phase_avec_equipes(sp_consolante, ids_consolante)
 
         groupes_crees += len(groupes_ch) + len(groupes_co)
 
