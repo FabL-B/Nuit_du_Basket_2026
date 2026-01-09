@@ -4,6 +4,7 @@ from core.models import Edition
 from tournois.models import Tournoi, CodeTournoi
 from phases.models import PhaseGlobale, TypePhaseGlobale, BrancheSousPhase
 from phases.services.sous_phases import generer_sous_phases_pour_phase_globale, ErreurGenerationSousPhases
+from phases.services._shared import ErreurReglesPhase, verifier_edition_a_3_tournois
 
 
 @pytest.mark.django_db
@@ -66,5 +67,5 @@ def test_refuse_si_tournois_incomplets():
         edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
     )
 
-    with pytest.raises(ErreurGenerationSousPhases):
-        generer_sous_phases_pour_phase_globale(phase)
+    with pytest.raises(ErreurReglesPhase):
+        verifier_edition_a_3_tournois(phase)
