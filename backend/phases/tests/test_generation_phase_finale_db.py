@@ -148,3 +148,29 @@ def test_finale_db_refuse_si_matchs_deja_existants():
 
     with pytest.raises(ErreurPhaseFinaleDB):
         generer_matchs_phase_finale(phase_finale, sp_finale, ids)
+
+
+@pytest.mark.django_db
+def test_finale_db_pairing_bracket_classique_sur_4_equipes():
+    edition, tournoi, phase_finale, sp_finale = _setup_base()
+
+    # Convention: l'ordre de la liste = seeds (1..N)
+    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)  # seed 1
+    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)  # seed 2
+    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE)  # seed 3
+    e4 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE)  # seed 4
+
+    ids = [e1.id, e2.id, e3.id, e4.id]
+
+    generer_matchs_phase_finale(phase_finale, sp_finale, ids)
+
+    matchs = list(
+        Match.objects.filter(phase_globale=phase_finale, sous_phase=sp_finale).order_by("id")
+    )
+    assert len(matchs) == 2
+
+    paires = {(m.equipe_a_id, m.equipe_b_id) for m in matchs}
+
+    # bracket classique: 1v4 et 2v3
+    assert (e1.id, e4.id) in paires
+    assert (e2.id, e3.id) in paires
