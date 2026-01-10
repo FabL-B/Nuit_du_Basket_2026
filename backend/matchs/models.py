@@ -35,6 +35,8 @@ class Match(models.Model):
         "groupes.Groupe",
         on_delete=models.PROTECT,
         related_name="matchs",
+        null=True,
+        blank=True,
     )
 
     equipe_a = models.ForeignKey(
@@ -82,6 +84,7 @@ class Match(models.Model):
             # Empêcher doublon strict A/B (ordre) au niveau DB
             models.UniqueConstraint(
                 fields=["groupe", "equipe_a", "equipe_b"],
+                condition=models.Q(groupe__isnull=False),
                 name="unique_match_par_groupe_et_paire_ordonne",
             ),
         ]
