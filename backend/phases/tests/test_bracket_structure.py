@@ -11,19 +11,14 @@ from phases.services.finale_bracket import (
 def test_format_bracket_minimum_demis_si_4_equipes():
     fmt = proposer_format_bracket(4)
     assert fmt.tour_depart == TourBracket.DEMI_FINALE
-    assert fmt.nb_slots == 4
+    assert fmt.nb_equipes == 4
+    assert fmt.nb_matchs_premier_tour == 2
 
 
-def test_format_bracket_quarts_si_entre_5_et_8():
-    fmt = proposer_format_bracket(6)
-    assert fmt.tour_depart == TourBracket.QUART_FINALE
-    assert fmt.nb_slots == 8
-
-
-def test_format_bracket_huitiemes_si_entre_9_et_16():
-    fmt = proposer_format_bracket(12)
-    assert fmt.tour_depart == TourBracket.HUITIEME_FINALE
-    assert fmt.nb_slots == 16
+@pytest.mark.parametrize("n", [5, 6, 7, 9, 10, 11, 12, 13, 14, 15])
+def test_format_bracket_refuse_tailles_intermediaires(n):
+    with pytest.raises(ErreurBracket):
+        proposer_format_bracket(n)
 
 
 def test_refuse_moins_de_4_equipes():
@@ -56,17 +51,15 @@ def test_generer_structure_demis_produit_2_demis_et_1_finale():
 
 
 def test_generer_structure_quarts_produit_4_quarts_2_demis_1_finale():
-    structure = generer_structure_bracket(6)
-
-    assert len([m for m in structure if m.tour == TourBracket.QUART_FINALE]) == 4
-    assert len([m for m in structure if m.tour == TourBracket.DEMI_FINALE]) == 2
-    assert len([m for m in structure if m.tour == TourBracket.FINALE]) == 1
+    structure = generer_structure_bracket(8)
+    assert sum(1 for m in structure if m.tour == TourBracket.QUART_FINALE) == 4
+    assert sum(1 for m in structure if m.tour == TourBracket.DEMI_FINALE) == 2
+    assert sum(1 for m in structure if m.tour == TourBracket.FINALE) == 1
 
 
 def test_generer_structure_huitiemes_produit_8_4_2_1():
-    structure = generer_structure_bracket(12)
-
-    assert len([m for m in structure if m.tour == TourBracket.HUITIEME_FINALE]) == 8
-    assert len([m for m in structure if m.tour == TourBracket.QUART_FINALE]) == 4
-    assert len([m for m in structure if m.tour == TourBracket.DEMI_FINALE]) == 2
-    assert len([m for m in structure if m.tour == TourBracket.FINALE]) == 1
+    structure = generer_structure_bracket(16)
+    assert sum(1 for m in structure if m.tour == TourBracket.HUITIEME_FINALE) == 8
+    assert sum(1 for m in structure if m.tour == TourBracket.QUART_FINALE) == 4
+    assert sum(1 for m in structure if m.tour == TourBracket.DEMI_FINALE) == 2
+    assert sum(1 for m in structure if m.tour == TourBracket.FINALE) == 1
