@@ -18,8 +18,15 @@ class TourBracket(str, Enum):
 
 @dataclass(frozen=True)
 class FormatBracket:
+    """
+    Format STRICT (pas de BYE, pas d'entre-deux) :
+    - 4 équipes  -> départ DEMI (2 matchs)
+    - 8 équipes  -> départ QUART (4 matchs)
+    - 16 équipes -> départ HUITIEME (8 matchs)
+    """
     tour_depart: TourBracket
-    nb_slots: int  # 4, 8, 16
+    nb_equipes: int  # 4, 8, 16
+    nb_matchs_premier_tour: int  # 2, 4, 8
 
 
 @dataclass(frozen=True)
@@ -39,39 +46,49 @@ class MatchBracket:
 
 def proposer_format_bracket(nb_equipes: int) -> FormatBracket:
     """
-    Choisit le tour de départ selon nb_equipes qualifiées.
-    Contraintes demandées:
-    - minimum demi-finales (=> 4 équipes min)
-    - maximum huitièmes (=> 16 équipes max)
-    - si nb_equipes non puissance de 2, BYE implicites (slots vides)
-    """
-    if nb_equipes < 4:
-        raise ErreurBracket("Phase finale: minimum 4 équipes requises (2 demis + finale).")
-    if nb_equipes > 16:
-        raise ErreurBracket("Phase finale: maximum 16 équipes (départ en 1/8).")
+    Choisit le tour de départ selon le nb d'équipes.
 
-    if nb_equipes <= 4:
-        return FormatBracket(tour_depart=TourBracket.DEMI_FINALE, nb_slots=4)
-    if nb_equipes <= 8:
-        return FormatBracket(tour_depart=TourBracket.QUART_FINALE, nb_slots=8)
-    return FormatBracket(tour_depart=TourBracket.HUITIEME_FINALE, nb_slots=16)
+    Règle figée :
+    - uniquement 4, 8, 16 (pas de BYE, pas d'entre-deux)
+    """
+    if nb_equipes == 4:
+        return FormatBracket(
+            tour_depart=TourBracket.DEMI_FINALE,
+            nb_equipes=4,
+            nb_matchs_premier_tour=2,
+        )
+    if nb_equipes == 8:
+        return FormatBracket(
+            tour_depart=TourBracket.QUART_FINALE,
+            nb_equipes=8,
+            nb_matchs_premier_tour=4,
+        )
+    if nb_equipes == 16:
+        return FormatBracket(
+            tour_depart=TourBracket.HUITIEME_FINALE,
+            nb_equipes=16,
+            nb_matchs_premier_tour=8,
+        )
+    raise ErreurBracket(
+        "Phase finale: format invalide. Attendu exactement 4, 8 ou 16 équipes (sans BYE)."
+    )
 
 
 def generer_structure_bracket(nb_equipes: int) -> List[MatchBracket]:
     """
     Génère la structure complète du bracket du tour de départ jusqu'à la finale.
-    Ne place pas les équipes, ne gère pas les BYE explicitement (ce sera au moment d'affecter les seeds).
+    Ne place pas les équipes.
+
+    Pas de BYE : l'appel doit être fait avec 4, 8 ou 16.
     """
     fmt = proposer_format_bracket(nb_equipes)
 
     tours = _tours_depuis(fmt.tour_depart)
     structure: List[MatchBracket] = []
 
-    # génère le premier tour
-    nb_matchs_tour = fmt.nb_slots // 2
+    # premier tour
     precedent_ids: List[str] = []
-
-    for i in range(1, nb_matchs_tour + 1):
+    for i in range(1, fmt.nb_matchs_premier_tour + 1):
         mid = _mk_id(tours[0], i)
         m = MatchBracket(id=mid, tour=tours[0], index=i, depuis_match_ids=[])
         structure.append(m)
