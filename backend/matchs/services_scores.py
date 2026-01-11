@@ -4,8 +4,9 @@ from django.db import transaction
 from django.utils import timezone
 
 from matchs.models import Match, Score, StatutMatch
+from phases.models import TypePhaseGlobale
 from classements.services import recalculer_classements_pour_groupe
-
+from phases.services.finale_progression import avancer_bracket_si_possible
 
 class ErreurScore(ValueError):
     pass
@@ -45,7 +46,8 @@ def valider_score(match, utilisateur) -> Score:
     IMPORTANT : l'ordre est contractuel :
     1) valider le Score (valide_le + valide_par)
     2) passer le Match en TERMINE
-    3) recalculer le classement
+    3) recalculer le classement (si match de groupe)
+    4) si match de phase finale -> tenter de créer le match suivant
     """
     if match.statut in {StatutMatch.FORFAIT_A, StatutMatch.FORFAIT_B, StatutMatch.DOUBLE_FORFAIT}:
         raise ErreurScore("Impossible de valider un score sur un match forfait.")
@@ -67,9 +69,13 @@ def valider_score(match, utilisateur) -> Score:
     match.statut = StatutMatch.TERMINE
     match.save(update_fields=["statut", "modifie_le"])
 
-    # 3) Recalcul classement (après persistance du statut TERMINE)
-    from classements.services import recalculer_classements_pour_groupe
+    # 3) Recalcul classement (seulement si match de groupe)
+    if match.groupe_id:
+        recalculer_classements_pour_groupe(match.groupe)
 
-    recalculer_classements_pour_groupe(match.groupe)
+    # 4) Phase finale: créer le match suivant si possible
+    if match.phase_globale.type_phase == TypePhaseGlobale.FINALE:
+        from phases.services.finale_progression import avancer_bracket_si_possible
+        avancer_bracket_si_possible(match)
 
     return score

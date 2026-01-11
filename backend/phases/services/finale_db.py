@@ -6,10 +6,9 @@ from typing import Iterable
 from django.db import transaction
 
 from inscriptions.models import Equipe, StatutEquipe
-from matchs.models import Match, StatutMatch
-from phases.models import PhaseGlobale, SousPhase
+from matchs.models import Match, StatutMatch, TourFinale
+from phases.models import PhaseGlobale, SousPhase, TypePhaseGlobale
 from phases.services.finale_seeding import generer_paires_premier_tour
-
 
 
 class ErreurPhaseFinaleDB(Exception):
@@ -31,6 +30,16 @@ def _validate_ids(equipe_ids: list[int]) -> None:
         raise ErreurPhaseFinaleDB("Phase finale: doublons d'équipes interdits.")
 
 
+def _tour_depart_pour_n(n: int) -> str:
+    if n == 4:
+        return TourFinale.DEMI
+    if n == 8:
+        return TourFinale.QUART
+    if n == 16:
+        return TourFinale.HUITIEME
+    raise ErreurPhaseFinaleDB("Phase finale: taille invalide (interne).")
+
+
 @transaction.atomic
 def generer_matchs_phase_finale(
     phase_globale_finale: PhaseGlobale,
@@ -41,12 +50,13 @@ def generer_matchs_phase_finale(
     Crée en DB les matchs du 1er tour de la phase finale (demis/quarts/huitièmes).
 
     Règles:
-    - N équipes doit être exactement 4, 8 ou 16 (décision admin)
+    - N équipes = exactement 4, 8 ou 16 (décision admin)
     - pas de doublons
     - équipes VALIDEE
     - même édition + même tournoi que sous_phase_finale
     - anti-doublon : refuse si des matchs existent déjà pour cette sous-phase finale
-    - on crée uniquement le 1er tour => N/2 matchs, sans groupe, sans planning
+    - crée uniquement le 1er tour => N/2 matchs, sans groupe, sans planning
+    - l'admin fournit equipe_ids dans l'ordre des seeds (seed1, seed2, ...)
     """
     equipe_ids = list(equipe_ids)
     _validate_ids(equipe_ids)
@@ -54,20 +64,23 @@ def generer_matchs_phase_finale(
     if sous_phase_finale.phase_globale_id != phase_globale_finale.id:
         raise ErreurPhaseFinaleDB("Sous-phase finale incohérente avec la phase globale finale.")
 
+    if phase_globale_finale.type_phase != TypePhaseGlobale.FINALE:
+        raise ErreurPhaseFinaleDB("Phase finale: phase_globale_finale doit être de type FINALE.")
+
     # anti-doublon process
-    if Match.objects.filter(phase_globale=phase_globale_finale, sous_phase=sous_phase_finale).exists():
+    if Match.objects.filter(
+        phase_globale=phase_globale_finale, sous_phase=sous_phase_finale
+    ).exists():
         raise ErreurPhaseFinaleDB("Phase finale: des matchs existent déjà pour cette sous-phase.")
 
     # Charger + valider équipes
     equipes = list(
         Equipe.objects.filter(id__in=equipe_ids)
-        .select_related("edition", "tournoi")
         .only("id", "edition_id", "tournoi_id", "statut")
     )
     if len(equipes) != len(equipe_ids):
         raise ErreurPhaseFinaleDB("Phase finale: au moins une équipe est introuvable.")
 
-    # Remettre dans l'ordre demandé par l'admin
     by_id = {e.id: e for e in equipes}
     ordered = [by_id[eid] for eid in equipe_ids]
 
@@ -82,17 +95,17 @@ def generer_matchs_phase_finale(
         if e.tournoi_id != tournoi_id:
             raise ErreurPhaseFinaleDB("Phase finale: équipe d'un autre tournoi.")
 
-    # Pairing bracket classique (standard seeding)
-    # Convention: l'admin fournit equipe_ids triés par seed (seed1, seed2, ...)
-    paires = generer_paires_premier_tour([str(e.id) for e in ordered])
+    tour_depart = _tour_depart_pour_n(len(ordered))
 
-    # map string id -> Equipe
-    by_id_str = {str(e.id): e for e in ordered}
+    # Pairing bracket classique (standard seeding)
+    paires = generer_paires_premier_tour([e.id for e in ordered])
+    by_id_int = {e.id: e for e in ordered}
 
     to_create: list[Match] = []
+    numero = 1
     for a_id, b_id in paires:
-        ea = by_id_str[a_id]
-        eb = by_id_str[b_id]
+        ea = by_id_int[a_id]
+        eb = by_id_int[b_id]
         to_create.append(
             Match(
                 edition_id=edition_id,
@@ -104,9 +117,11 @@ def generer_matchs_phase_finale(
                 statut=StatutMatch.A_PLANIFIER,
                 creneau=None,
                 terrain=None,
+                tour_finale=tour_depart,
+                numero_tour=numero,
             )
         )
-
+        numero += 1
 
     Match.objects.bulk_create(to_create)
 

@@ -15,6 +15,13 @@ class StatutMatch(models.TextChoices):
     DOUBLE_FORFAIT = "DOUBLE_FORFAIT", "Double forfait"
 
 
+class TourFinale(models.TextChoices):
+    HUITIEME = "HUITIEME", "Huitième"
+    QUART = "QUART", "Quart"
+    DEMI = "DEMI", "Demi"
+    FINALE = "FINALE", "Finale"
+
+
 class Match(models.Model):
     edition = models.ForeignKey(
         "core.Edition",
@@ -50,6 +57,15 @@ class Match(models.Model):
         related_name="matchs_comme_b",
     )
 
+    vainqueur = models.ForeignKey(
+        "inscriptions.Equipe",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="matchs_gagnes",
+    )
+
+
     # Planification (nullable au départ)
     creneau = models.ForeignKey(
         "planning.Creneau",
@@ -72,6 +88,14 @@ class Match(models.Model):
         default=StatutMatch.A_PLANIFIER,
     )
 
+    tour_finale = models.CharField(
+        max_length=20,
+        choices=TourFinale.choices,
+        null=True,
+        blank=True,
+    )
+    numero_tour = models.PositiveSmallIntegerField(null=True, blank=True)
+
     cree_le = models.DateTimeField(auto_now_add=True)
     modifie_le = models.DateTimeField(auto_now=True)
 
@@ -81,11 +105,15 @@ class Match(models.Model):
                 condition=~models.Q(equipe_a=models.F("equipe_b")),
                 name="match_equipes_differentes",
             ),
-            # Empêcher doublon strict A/B (ordre) au niveau DB
             models.UniqueConstraint(
                 fields=["groupe", "equipe_a", "equipe_b"],
                 condition=models.Q(groupe__isnull=False),
                 name="unique_match_par_groupe_et_paire_ordonne",
+            ),
+            models.UniqueConstraint(
+                fields=["phase_globale", "sous_phase", "tour_finale", "numero_tour"],
+                condition=models.Q(tour_finale__isnull=False),
+                name="unique_match_finale_par_tour_numero",
             ),
         ]
 
@@ -136,6 +164,9 @@ class Match(models.Model):
                     erreurs["equipe_b"] = "L'équipe B n'appartient pas à la même édition."
                 if self.equipe_b.tournoi_id != tournoi_id:
                     erreurs["equipe_b"] = "L'équipe B n'appartient pas au bon tournoi."
+
+        if self.vainqueur_id and self.vainqueur_id not in {self.equipe_a_id, self.equipe_b_id}:
+            erreurs["vainqueur"] = "Le vainqueur doit être l'équipe A ou B."
 
         if erreurs:
             raise ValidationError(erreurs)

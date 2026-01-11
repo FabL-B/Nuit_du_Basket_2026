@@ -7,7 +7,7 @@ class ErreurSeeding(ValueError):
     pass
 
 
-def generer_paires_premier_tour(equipes_triees: List[str]) -> List[Tuple[str, str]]:
+def generer_paires_premier_tour(equipes_triees: List[int]) -> List[Tuple[int, int]]:
     """
     Input:
     - equipes_triees: liste déjà triée par seed (index 0 = seed 1)
@@ -17,11 +17,13 @@ def generer_paires_premier_tour(equipes_triees: List[str]) -> List[Tuple[str, st
     """
     n = len(equipes_triees)
     if n not in (4, 8, 16):
-        raise ErreurSeeding("Phase finale: format invalide. Attendu exactement 4, 8 ou 16 équipes.")
+        raise ErreurSeeding(
+            "Phase finale: format invalide. Attendu exactement 4, 8 ou 16 équipes."
+        )
 
     positions = _positions_standard(n)
 
-    slots: List[str] = [""] * n
+    slots: List[int] = [0] * n
     for slot_index, seed in enumerate(positions):
         slots[slot_index] = equipes_triees[seed - 1]
 

@@ -1,8 +1,6 @@
 import pytest
 from datetime import date
 
-from django.contrib.auth import get_user_model
-
 from core.models import Edition
 from inscriptions.models import Equipe, StatutEquipe
 from matchs.models import Match, StatutMatch
