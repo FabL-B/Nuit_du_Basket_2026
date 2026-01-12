@@ -31,14 +31,22 @@ def test_admin_peut_swap_equipes_entre_deux_groupes_meme_sous_phase():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
 
     g1 = Groupe.objects.create(sous_phase=sp, code="A")
     g2 = Groupe.objects.create(sous_phase=sp, code="B")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
 
     GroupeEquipe.objects.create(groupe=g1, equipe=e1)
     GroupeEquipe.objects.create(groupe=g2, equipe=e2)

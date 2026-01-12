@@ -46,13 +46,23 @@ def test_progression_ignore_si_pas_phase_finale():
         phase_globale=phase1, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
     )
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
 
     m = Match.objects.create(
-        edition=edition, phase_globale=phase1, sous_phase=sp, groupe=None,
-        equipe_a=e1, equipe_b=e2, statut=StatutMatch.TERMINE,
-        tour_finale=TourFinale.DEMI, numero_tour=1,
+        edition=edition,
+        phase_globale=phase1,
+        sous_phase=sp,
+        groupe=None,
+        equipe_a=e1,
+        equipe_b=e2,
+        statut=StatutMatch.TERMINE,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=1,
     )
 
     assert avancer_bracket_si_possible(m) is None
@@ -63,9 +73,15 @@ def test_progression_raise_si_tour_ou_numero_absent():
     _, _, phase_finale, sp_finale, equipes = _setup_base()
 
     m = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[0], equipe_b=equipes[1], statut=StatutMatch.TERMINE,
-        tour_finale=None, numero_tour=None,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[0],
+        equipe_b=equipes[1],
+        statut=StatutMatch.TERMINE,
+        tour_finale=None,
+        numero_tour=None,
     )
 
     with pytest.raises(ErreurProgressionFinale):
@@ -77,9 +93,15 @@ def test_progression_ne_fait_rien_si_match_pas_finalise():
     _, _, phase_finale, sp_finale, equipes = _setup_base()
 
     demi1 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[0], equipe_b=equipes[1], statut=StatutMatch.PLANIFIE,
-        tour_finale=TourFinale.DEMI, numero_tour=1,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[0],
+        equipe_b=equipes[1],
+        statut=StatutMatch.PLANIFIE,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=1,
     )
 
     assert avancer_bracket_si_possible(demi1) is None
@@ -93,23 +115,38 @@ def test_progression_ne_fait_rien_si_frere_pas_finalise():
     _, _, phase_finale, sp_finale, equipes = _setup_base()
 
     demi1 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[0], equipe_b=equipes[3], statut=StatutMatch.TERMINE,
-        tour_finale=TourFinale.DEMI, numero_tour=1,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[0],
+        equipe_b=equipes[3],
+        statut=StatutMatch.TERMINE,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=1,
     )
     Score.objects.create(match=demi1, points_a=10, points_b=5, valide_le=None, valide_par=None)
 
     demi2 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[1], equipe_b=equipes[2], statut=StatutMatch.PLANIFIE,
-        tour_finale=TourFinale.DEMI, numero_tour=2,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[1],
+        equipe_b=equipes[2],
+        statut=StatutMatch.PLANIFIE,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=2,
     )
 
     assert avancer_bracket_si_possible(demi1) is None
     assert avancer_bracket_si_possible(demi2) is None
-    assert Match.objects.filter(
-        phase_globale=phase_finale, sous_phase=sp_finale, tour_finale=TourFinale.FINALE
-    ).count() == 0
+    assert (
+        Match.objects.filter(
+            phase_globale=phase_finale, sous_phase=sp_finale, tour_finale=TourFinale.FINALE
+        ).count()
+        == 0
+    )
 
 
 @pytest.mark.django_db
@@ -118,9 +155,15 @@ def test_progression_cree_finale_quand_les_deux_demis_sont_finalises():
 
     # demi 1 : E1 bat E4
     demi1 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[0], equipe_b=equipes[3], statut=StatutMatch.TERMINE,
-        tour_finale=TourFinale.DEMI, numero_tour=1,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[0],
+        equipe_b=equipes[3],
+        statut=StatutMatch.TERMINE,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=1,
     )
     s1 = Score.objects.create(match=demi1, points_a=10, points_b=5, valide_le=None, valide_par=None)
     # on simule un score "validé" (ton service scores le fait normalement)
@@ -128,9 +171,15 @@ def test_progression_cree_finale_quand_les_deux_demis_sont_finalises():
 
     # demi 2 : E2 bat E3
     demi2 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[1], equipe_b=equipes[2], statut=StatutMatch.TERMINE,
-        tour_finale=TourFinale.DEMI, numero_tour=2,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[1],
+        equipe_b=equipes[2],
+        statut=StatutMatch.TERMINE,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=2,
     )
     s2 = Score.objects.create(match=demi2, points_a=7, points_b=3, valide_le=None, valide_par=None)
     Score.objects.filter(pk=s2.pk).update(valide_le="2026-06-20T14:00:00Z")
@@ -153,14 +202,26 @@ def test_progression_idempotente_si_finale_deja_creee():
     _, _, phase_finale, sp_finale, equipes = _setup_base()
 
     demi1 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[0], equipe_b=equipes[3], statut=StatutMatch.FORFAIT_B,
-        tour_finale=TourFinale.DEMI, numero_tour=1,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[0],
+        equipe_b=equipes[3],
+        statut=StatutMatch.FORFAIT_B,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=1,
     )
     demi2 = Match.objects.create(
-        edition=phase_finale.edition, phase_globale=phase_finale, sous_phase=sp_finale, groupe=None,
-        equipe_a=equipes[1], equipe_b=equipes[2], statut=StatutMatch.FORFAIT_B,
-        tour_finale=TourFinale.DEMI, numero_tour=2,
+        edition=phase_finale.edition,
+        phase_globale=phase_finale,
+        sous_phase=sp_finale,
+        groupe=None,
+        equipe_a=equipes[1],
+        equipe_b=equipes[2],
+        statut=StatutMatch.FORFAIT_B,
+        tour_finale=TourFinale.DEMI,
+        numero_tour=2,
     )
 
     created1 = avancer_bracket_si_possible(demi1)
@@ -168,13 +229,19 @@ def test_progression_idempotente_si_finale_deja_creee():
         created1 = avancer_bracket_si_possible(demi2)
 
     assert created1 is not None
-    assert Match.objects.filter(
-        phase_globale=phase_finale, sous_phase=sp_finale, tour_finale=TourFinale.FINALE
-    ).count() == 1
+    assert (
+        Match.objects.filter(
+            phase_globale=phase_finale, sous_phase=sp_finale, tour_finale=TourFinale.FINALE
+        ).count()
+        == 1
+    )
 
     # second appel: ne doit rien recréer
     assert avancer_bracket_si_possible(demi1) is None
     assert avancer_bracket_si_possible(demi2) is None
-    assert Match.objects.filter(
-        phase_globale=phase_finale, sous_phase=sp_finale, tour_finale=TourFinale.FINALE
-    ).count() == 1
+    assert (
+        Match.objects.filter(
+            phase_globale=phase_finale, sous_phase=sp_finale, tour_finale=TourFinale.FINALE
+        ).count()
+        == 1
+    )

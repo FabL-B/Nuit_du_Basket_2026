@@ -30,4 +30,3 @@ def test_refuse_si_pas_4_8_16(n):
     equipes = [f"E{i}" for i in range(1, n + 1)]
     with pytest.raises(ErreurSeeding):
         generer_paires_premier_tour(equipes)
-

@@ -117,18 +117,32 @@ def test_phase2_genere_matchs_round_robin_par_groupe():
 
     # Challenge: 3 équipes => 3 matchs
     g_ch = Groupe.objects.create(sous_phase=sp_ch, code="A")
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
-    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
+    e3 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE
+    )
     for e in (e1, e2, e3):
         GroupeEquipe.objects.create(groupe=g_ch, equipe=e)
 
     # Consolante: 4 équipes => 6 matchs
     g_co = Groupe.objects.create(sous_phase=sp_co, code="B")
-    e4 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE)
-    e5 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E5", statut=StatutEquipe.VALIDEE)
-    e6 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E6", statut=StatutEquipe.VALIDEE)
-    e7 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E7", statut=StatutEquipe.VALIDEE)
+    e4 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE
+    )
+    e5 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E5", statut=StatutEquipe.VALIDEE
+    )
+    e6 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E6", statut=StatutEquipe.VALIDEE
+    )
+    e7 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E7", statut=StatutEquipe.VALIDEE
+    )
     for e in (e4, e5, e6, e7):
         GroupeEquipe.objects.create(groupe=g_co, equipe=e)
 
@@ -164,8 +178,12 @@ def test_phase2_refuse_si_matchs_deja_generes():
     )
     g = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
     GroupeEquipe.objects.create(groupe=g, equipe=e1)
     GroupeEquipe.objects.create(groupe=g, equipe=e2)
 

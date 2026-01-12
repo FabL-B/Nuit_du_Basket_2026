@@ -117,7 +117,10 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             score.full_clean()
             score.save()
         except ValidationError as e:
-            return Response({"detail": e.message_dict if hasattr(e, "message_dict") else str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": e.message_dict if hasattr(e, "message_dict") else str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {

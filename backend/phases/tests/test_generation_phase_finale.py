@@ -18,8 +18,8 @@ def test_finale_genere_structure_complete(n, total_matchs_attendus):
 @pytest.mark.parametrize(
     "n, nb_premier_tour, nb_tours",
     [
-        (4, 2, 2),   # demis + finale
-        (8, 4, 3),   # quarts + demis + finale
+        (4, 2, 2),  # demis + finale
+        (8, 4, 3),  # quarts + demis + finale
         (16, 8, 4),  # 8e + quarts + demis + finale
     ],
 )

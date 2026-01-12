@@ -20,12 +20,20 @@ def test_admin_peut_valider_score_et_termine_match():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 
@@ -64,12 +72,20 @@ def test_admin_refuse_valider_si_pas_de_score():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 

@@ -24,6 +24,7 @@ class FormatBracket:
     - 8 équipes  -> départ QUART (4 matchs)
     - 16 équipes -> départ HUITIEME (8 matchs)
     """
+
     tour_depart: TourBracket
     nb_equipes: int  # 4, 8, 16
     nb_matchs_premier_tour: int  # 2, 4, 8
@@ -38,6 +39,7 @@ class MatchBracket:
     - index: position dans le tour (1..n)
     - depuis_match_ids: pour les tours suivants, liste des matchs du tour précédent dont proviennent les gagnants
     """
+
     id: str
     tour: TourBracket
     index: int

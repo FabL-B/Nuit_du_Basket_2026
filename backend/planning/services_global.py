@@ -46,9 +46,13 @@ def generer_planning_global(
     # garde-fous
     if phase1.edition_id != edition.id or phase1.type_phase != TypePhaseGlobale.PHASE_1:
         raise ErreurPlanningGlobal("phase1 invalide (édition ou type).")
-    if phase2 and (phase2.edition_id != edition.id or phase2.type_phase != TypePhaseGlobale.PHASE_2):
+    if phase2 and (
+        phase2.edition_id != edition.id or phase2.type_phase != TypePhaseGlobale.PHASE_2
+    ):
         raise ErreurPlanningGlobal("phase2 invalide (édition ou type).")
-    if phase_finale and (phase_finale.edition_id != edition.id or phase_finale.type_phase != TypePhaseGlobale.FINALE):
+    if phase_finale and (
+        phase_finale.edition_id != edition.id or phase_finale.type_phase != TypePhaseGlobale.FINALE
+    ):
         raise ErreurPlanningGlobal("phase_finale invalide (édition ou type).")
 
     # 1) planning phase 1
@@ -61,9 +65,7 @@ def generer_planning_global(
     resf = services_planning.generer_planning_phase_globale(phase_finale) if phase_finale else None
 
     # snapshot des débuts AVANT (pour compter)
-    before = dict(
-        Creneau.objects.filter(edition=edition).values_list("id", "debut")
-    )
+    before = dict(Creneau.objects.filter(edition=edition).values_list("id", "debut"))
 
     # 4) pause concours shoot (optionnelle)
     pause_creee = False
@@ -94,9 +96,7 @@ def generer_planning_global(
     recalculer_debuts_creneaux_avec_pauses(edition)
 
     # snapshot APRES + comptage
-    after = dict(
-        Creneau.objects.filter(edition=edition).values_list("id", "debut")
-    )
+    after = dict(Creneau.objects.filter(edition=edition).values_list("id", "debut"))
     creneaux_deplaces = sum(1 for cid, d0 in before.items() if after.get(cid) != d0)
 
     return ResumePlanningGlobal(

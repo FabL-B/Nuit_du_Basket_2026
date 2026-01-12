@@ -181,10 +181,16 @@ def generer_phase2_depuis_phase1(
         ids_consolante = ordre[nb_challenge:]
 
         sp_challenge = _get_sous_phase_phase2(phase2, prop.code_tournoi, BrancheSousPhase.CHALLENGE)
-        sp_consolante = _get_sous_phase_phase2(phase2, prop.code_tournoi, BrancheSousPhase.CONSOLANTE)
+        sp_consolante = _get_sous_phase_phase2(
+            phase2, prop.code_tournoi, BrancheSousPhase.CONSOLANTE
+        )
 
-        groupes_ch = generer_groupes_phase2_pour_sous_phase_avec_equipes(sp_challenge, ids_challenge)
-        groupes_co = generer_groupes_phase2_pour_sous_phase_avec_equipes(sp_consolante, ids_consolante)
+        groupes_ch = generer_groupes_phase2_pour_sous_phase_avec_equipes(
+            sp_challenge, ids_challenge
+        )
+        groupes_co = generer_groupes_phase2_pour_sous_phase_avec_equipes(
+            sp_consolante, ids_consolante
+        )
 
         groupes_crees += len(groupes_ch) + len(groupes_co)
         total_challenge += len(ids_challenge)

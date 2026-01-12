@@ -17,9 +17,7 @@ def generer_paires_premier_tour(equipes_triees: List[int]) -> List[Tuple[int, in
     """
     n = len(equipes_triees)
     if n not in (4, 8, 16):
-        raise ErreurSeeding(
-            "Phase finale: format invalide. Attendu exactement 4, 8 ou 16 équipes."
-        )
+        raise ErreurSeeding("Phase finale: format invalide. Attendu exactement 4, 8 ou 16 équipes.")
 
     positions = _positions_standard(n)
 

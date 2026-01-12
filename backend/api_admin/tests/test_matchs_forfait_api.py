@@ -20,12 +20,20 @@ def test_admin_peut_declarer_forfait_a():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 
@@ -42,7 +50,9 @@ def test_admin_peut_declarer_forfait_a():
     client = APIClient()
     client.force_authenticate(user=admin)
 
-    resp = client.post(f"/api/admin/matchs/{match.id}/forfait/", {"statut": StatutMatch.FORFAIT_A}, format="json")
+    resp = client.post(
+        f"/api/admin/matchs/{match.id}/forfait/", {"statut": StatutMatch.FORFAIT_A}, format="json"
+    )
     assert resp.status_code == 200
 
     match.refresh_from_db()
@@ -57,12 +67,20 @@ def test_forfait_refuse_si_match_termine():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 
@@ -79,5 +97,7 @@ def test_forfait_refuse_si_match_termine():
     client = APIClient()
     client.force_authenticate(user=admin)
 
-    resp = client.post(f"/api/admin/matchs/{match.id}/forfait/", {"statut": StatutMatch.FORFAIT_A}, format="json")
+    resp = client.post(
+        f"/api/admin/matchs/{match.id}/forfait/", {"statut": StatutMatch.FORFAIT_A}, format="json"
+    )
     assert resp.status_code == 400

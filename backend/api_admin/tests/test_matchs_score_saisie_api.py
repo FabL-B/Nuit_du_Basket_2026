@@ -20,12 +20,20 @@ def test_admin_peut_saisir_score_cree_ou_met_a_jour():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
     GroupeEquipe.objects.create(groupe=groupe, equipe=e1)
     GroupeEquipe.objects.create(groupe=groupe, equipe=e2)
 
@@ -41,11 +49,15 @@ def test_admin_peut_saisir_score_cree_ou_met_a_jour():
     client = APIClient()
     client.force_authenticate(user=admin)
 
-    resp1 = client.post(f"/api/admin/matchs/{match.id}/score/", {"points_a": 10, "points_b": 8}, format="json")
+    resp1 = client.post(
+        f"/api/admin/matchs/{match.id}/score/", {"points_a": 10, "points_b": 8}, format="json"
+    )
     assert resp1.status_code == 200
     assert Score.objects.filter(match=match).count() == 1
 
-    resp2 = client.post(f"/api/admin/matchs/{match.id}/score/", {"points_a": 12, "points_b": 9}, format="json")
+    resp2 = client.post(
+        f"/api/admin/matchs/{match.id}/score/", {"points_a": 12, "points_b": 9}, format="json"
+    )
     assert resp2.status_code == 200
 
     score = Score.objects.get(match=match)
@@ -59,10 +71,14 @@ def test_non_admin_refuse_saisie_score():
     user = User.objects.create_user(username="user", password="pass", is_staff=False)
 
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
 
     client = APIClient()
     client.force_authenticate(user=user)
 
-    resp = client.post(f"/api/admin/matchs/999/score/", {"points_a": 10, "points_b": 8}, format="json")
+    resp = client.post(
+        f"/api/admin/matchs/999/score/", {"points_a": 10, "points_b": 8}, format="json"
+    )
     assert resp.status_code in (403, 404)

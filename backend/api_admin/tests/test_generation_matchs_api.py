@@ -20,14 +20,20 @@ def test_admin_peut_generer_matchs_pour_phase_globale():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
     # 4 équipes => round-robin => 6 matchs attendus
     equipes = []
     for i in range(4):
-        e = Equipe.objects.create(edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE)
+        e = Equipe.objects.create(
+            edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE
+        )
         equipes.append(e)
         GroupeEquipe.objects.create(groupe=groupe, equipe=e)
 
@@ -46,7 +52,9 @@ def test_non_admin_refuse_generation_matchs():
     user = User.objects.create_user(username="user", password="pass", is_staff=False)
 
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
 
     client = APIClient()
     client.force_authenticate(user=user)

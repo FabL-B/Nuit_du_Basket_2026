@@ -14,7 +14,9 @@ class GroupeEquipeSerializer(serializers.ModelSerializer):
 
 class GroupeSerializer(serializers.ModelSerializer):
     sous_phase_id = serializers.IntegerField(source="sous_phase.id", read_only=True)
-    phase_globale_id = serializers.IntegerField(source="sous_phase.phase_globale_id", read_only=True)
+    phase_globale_id = serializers.IntegerField(
+        source="sous_phase.phase_globale_id", read_only=True
+    )
     tournoi_id = serializers.IntegerField(source="sous_phase.tournoi_id", read_only=True)
     branche = serializers.CharField(source="sous_phase.branche", read_only=True)
     equipes = GroupeEquipeSerializer(many=True, read_only=True)

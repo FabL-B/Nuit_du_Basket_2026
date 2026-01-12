@@ -3,7 +3,10 @@ import pytest
 from core.models import Edition
 from tournois.models import Tournoi, CodeTournoi
 from phases.models import PhaseGlobale, TypePhaseGlobale, BrancheSousPhase
-from phases.services.sous_phases import generer_sous_phases_pour_phase_globale, ErreurGenerationSousPhases
+from phases.services.sous_phases import (
+    generer_sous_phases_pour_phase_globale,
+    ErreurGenerationSousPhases,
+)
 from phases.services._shared import ErreurReglesPhase, verifier_edition_a_3_tournois
 
 

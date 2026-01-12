@@ -75,8 +75,7 @@ def generer_matchs_phase_finale(
 
     # Charger + valider équipes
     equipes = list(
-        Equipe.objects.filter(id__in=equipe_ids)
-        .only("id", "edition_id", "tournoi_id", "statut")
+        Equipe.objects.filter(id__in=equipe_ids).only("id", "edition_id", "tournoi_id", "statut")
     )
     if len(equipes) != len(equipe_ids):
         raise ErreurPhaseFinaleDB("Phase finale: au moins une équipe est introuvable.")

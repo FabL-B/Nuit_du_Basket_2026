@@ -7,11 +7,13 @@ from phases.models import TypePhaseGlobale
 class ErreurProgressionFinale(Exception):
     pass
 
+
 _TOUR_SUIVANT = {
     TourFinale.HUITIEME: TourFinale.QUART,
     TourFinale.QUART: TourFinale.DEMI,
     TourFinale.DEMI: TourFinale.FINALE,
 }
+
 
 def _est_finalise(statut: str) -> bool:
     return statut in {
@@ -20,6 +22,7 @@ def _est_finalise(statut: str) -> bool:
         StatutMatch.FORFAIT_B,
         StatutMatch.DOUBLE_FORFAIT,
     }
+
 
 def _get_vainqueur_finale(match: Match):
     if match.statut == StatutMatch.DOUBLE_FORFAIT:
@@ -65,12 +68,16 @@ def avancer_bracket_si_possible(match: Match) -> Match | None:
 
     # match frère
     frere_num = match.numero_tour + 1 if match.numero_tour % 2 == 1 else match.numero_tour - 1
-    frere = Match.objects.filter(
-        phase_globale=match.phase_globale,
-        sous_phase=match.sous_phase,
-        tour_finale=match.tour_finale,
-        numero_tour=frere_num,
-    ).select_related("score").first()
+    frere = (
+        Match.objects.filter(
+            phase_globale=match.phase_globale,
+            sous_phase=match.sous_phase,
+            tour_finale=match.tour_finale,
+            numero_tour=frere_num,
+        )
+        .select_related("score")
+        .first()
+    )
 
     if not frere or not _est_finalise(frere.statut):
         return None
@@ -111,4 +118,3 @@ def avancer_bracket_si_possible(match: Match) -> Match | None:
         numero_tour=num_suivant,
     )
     return created
-

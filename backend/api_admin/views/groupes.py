@@ -66,7 +66,10 @@ class GroupeViewSet(viewsets.ModelViewSet):
                 groupe_id=groupe_b_id, equipe_id=equipe_b_id
             )
         except GroupeEquipe.DoesNotExist:
-            return Response({"detail": "Affectation introuvable (groupe/equipe)."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Affectation introuvable (groupe/equipe)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             swap_equipes_entre_groupes(ge_a, ge_b)

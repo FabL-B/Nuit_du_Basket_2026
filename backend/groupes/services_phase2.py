@@ -12,7 +12,9 @@ def _calculer_tailles_groupes_phase2(nb_equipes: int) -> list[int]:
     Phase 2 : groupes de 3/4/5 autorisés.
     """
     if nb_equipes < 3:
-        raise ErreurGenerationGroupes("Génération impossible : minimum 3 équipes requis en Phase 2.")
+        raise ErreurGenerationGroupes(
+            "Génération impossible : minimum 3 équipes requis en Phase 2."
+        )
 
     mapping = {
         3: [3],
@@ -74,7 +76,9 @@ def generer_groupes_phase2_pour_sous_phase_avec_equipes(
     )
 
     if len(equipes) != len(set(equipe_ids)):
-        raise ErreurGenerationGroupes("Liste d'équipes invalide : certaines équipes sont introuvables.")
+        raise ErreurGenerationGroupes(
+            "Liste d'équipes invalide : certaines équipes sont introuvables."
+        )
 
     tailles = _calculer_tailles_groupes_phase2(len(equipes))
     return _creer_groupes_et_affectations(sous_phase, equipes, tailles)

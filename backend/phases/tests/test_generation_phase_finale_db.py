@@ -153,10 +153,18 @@ def test_finale_db_pairing_bracket_classique_sur_4_equipes():
     edition, tournoi, phase_finale, sp_finale = _setup_base()
 
     # Convention: l'ordre de la liste = seeds (1..N)
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)  # seed 1
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)  # seed 2
-    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE)  # seed 3
-    e4 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE)  # seed 4
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )  # seed 1
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )  # seed 2
+    e3 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE
+    )  # seed 3
+    e4 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE
+    )  # seed 4
 
     ids = [e1.id, e2.id, e3.id, e4.id]
 

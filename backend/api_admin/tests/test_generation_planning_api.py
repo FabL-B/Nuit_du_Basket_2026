@@ -25,10 +25,16 @@ def test_admin_peut_generer_planning_phase_globale():
     for i in range(4):
         Terrain.objects.create(edition=edition, nom=f"Int {i+1}", type_terrain="INTERIEUR", ordre=i)
     for i in range(4):
-        Terrain.objects.create(edition=edition, nom=f"Ext {i+1}", type_terrain="EXTERIEUR", ordre=10 + i)
+        Terrain.objects.create(
+            edition=edition, nom=f"Ext {i+1}", type_terrain="EXTERIEUR", ordre=10 + i
+        )
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
     equipes = []
@@ -58,7 +64,9 @@ def test_admin_peut_generer_planning_phase_globale():
     client = APIClient()
     client.force_authenticate(user=admin)
 
-    resp = client.post(f"/api/admin/phases-globales/{phase.id}/generer-planning/", {}, format="json")
+    resp = client.post(
+        f"/api/admin/phases-globales/{phase.id}/generer-planning/", {}, format="json"
+    )
     assert resp.status_code == 200
 
     assert Match.objects.filter(phase_globale=phase, terrain__isnull=False).count() == 6
@@ -71,10 +79,14 @@ def test_non_admin_refuse_generation_planning():
     user = User.objects.create_user(username="user", password="pass", is_staff=False)
 
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
 
     client = APIClient()
     client.force_authenticate(user=user)
 
-    resp = client.post(f"/api/admin/phases-globales/{phase.id}/generer-planning/", {}, format="json")
+    resp = client.post(
+        f"/api/admin/phases-globales/{phase.id}/generer-planning/", {}, format="json"
+    )
     assert resp.status_code == 403

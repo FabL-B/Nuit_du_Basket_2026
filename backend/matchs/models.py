@@ -65,7 +65,6 @@ class Match(models.Model):
         related_name="matchs_gagnes",
     )
 
-
     # Planification (nullable au départ)
     creneau = models.ForeignKey(
         "planning.Creneau",

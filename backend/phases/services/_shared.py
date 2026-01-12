@@ -81,6 +81,5 @@ def verifier_edition_a_3_tournois(phase_globale: PhaseGlobale) -> None:
     codes = {t.code for t in tournois}
     if codes != _CODES_AUTORISES:
         raise ErreurReglesPhase(
-            "Tournois incomplets pour cette édition. "
-            "Attendu: ROOKIE + LOISIR + COMPETITEUR."
+            "Tournois incomplets pour cette édition. " "Attendu: ROOKIE + LOISIR + COMPETITEUR."
         )

@@ -13,11 +13,19 @@ def test_match_finale_peut_etre_cree_sans_groupe():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20))
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.LOISIR)
 
-    finale = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.FINALE, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=finale, tournoi=tournoi, branche=BrancheSousPhase.CHALLENGE)
+    finale = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.FINALE, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=finale, tournoi=tournoi, branche=BrancheSousPhase.CHALLENGE
+    )
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
 
     m = Match.objects.create(
         edition=edition,

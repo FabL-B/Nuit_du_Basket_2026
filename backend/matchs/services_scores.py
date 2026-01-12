@@ -8,6 +8,7 @@ from phases.models import TypePhaseGlobale
 from classements.services import recalculer_classements_pour_groupe
 from phases.services.finale_progression import avancer_bracket_si_possible
 
+
 class ErreurScore(ValueError):
     pass
 
@@ -76,6 +77,7 @@ def valider_score(match, utilisateur) -> Score:
     # 4) Phase finale: créer le match suivant si possible
     if match.phase_globale.type_phase == TypePhaseGlobale.FINALE:
         from phases.services.finale_progression import avancer_bracket_si_possible
+
         avancer_bracket_si_possible(match)
 
     return score

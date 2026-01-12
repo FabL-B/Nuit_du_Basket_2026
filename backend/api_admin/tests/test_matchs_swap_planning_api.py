@@ -27,31 +27,55 @@ def test_admin_peut_swap_planning_entre_deux_matchs():
 
     start = timezone.make_aware(datetime(2026, 6, 20, 14, 0))
     c1 = Creneau.objects.create(edition=edition, index=1, debut=start, duree_minutes=15)
-    c2 = Creneau.objects.create(edition=edition, index=2, debut=start + timedelta(minutes=15), duree_minutes=15)
+    c2 = Creneau.objects.create(
+        edition=edition, index=2, debut=start + timedelta(minutes=15), duree_minutes=15
+    )
 
-    phase = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1)
-    sp = SousPhase.objects.create(phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE)
+    phase = PhaseGlobale.objects.create(
+        edition=edition, type_phase=TypePhaseGlobale.PHASE_1, sequence=1
+    )
+    sp = SousPhase.objects.create(
+        phase_globale=phase, tournoi=tournoi, branche=BrancheSousPhase.AUCUNE
+    )
     groupe = Groupe.objects.create(sous_phase=sp, code="A")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
-    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE)
-    e4 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
+    e3 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE
+    )
+    e4 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE
+    )
 
     for e in (e1, e2, e3, e4):
         GroupeEquipe.objects.create(groupe=groupe, equipe=e)
 
     m1 = Match.objects.create(
-        edition=edition, phase_globale=phase, sous_phase=sp, groupe=groupe,
-        equipe_a=e1, equipe_b=e2,
+        edition=edition,
+        phase_globale=phase,
+        sous_phase=sp,
+        groupe=groupe,
+        equipe_a=e1,
+        equipe_b=e2,
         statut=StatutMatch.PLANIFIE,
-        creneau=c1, terrain=t1,
+        creneau=c1,
+        terrain=t1,
     )
     m2 = Match.objects.create(
-        edition=edition, phase_globale=phase, sous_phase=sp, groupe=groupe,
-        equipe_a=e3, equipe_b=e4,
+        edition=edition,
+        phase_globale=phase,
+        sous_phase=sp,
+        groupe=groupe,
+        equipe_a=e3,
+        equipe_b=e4,
         statut=StatutMatch.PLANIFIE,
-        creneau=c2, terrain=t2,
+        creneau=c2,
+        terrain=t2,
     )
 
     client = APIClient()
