@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from core.models import Edition
 from phases.models import PhaseGlobale
 from api_admin.serializers.editions import EditionSerializer
-from api_admin.openapi.editions import schema_editions_viewset
+from api_admin.openapi.editions import schema_editions_viewset, schema_generer_planning_global
 from api_admin.serializers.planning_global import PlanningGlobalInputSerializer
 
 from planning.services_global import generer_planning_global, ErreurPlanningGlobal
@@ -18,6 +18,7 @@ class EditionViewSet(viewsets.ModelViewSet):
     serializer_class = EditionSerializer
     permission_classes = [IsAdminUser]
 
+    @schema_generer_planning_global
     @action(detail=True, methods=["post"], url_path="planning-global/generer")
     def generer_planning_global(self, request, pk=None):
         edition = self.get_object()

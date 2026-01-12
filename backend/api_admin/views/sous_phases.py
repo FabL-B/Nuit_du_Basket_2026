@@ -6,8 +6,10 @@ from rest_framework.response import Response
 from phases.models import SousPhase
 from groupes.services_phase1 import generer_groupes_phase1_pour_sous_phase, ErreurGenerationGroupes
 from api_admin.serializers.sous_phases import SousPhaseSerializer
+from api_admin.openapi.sous_phases import schema_sous_phases_admin
 
 
+@schema_sous_phases_admin
 class SousPhaseViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = SousPhaseSerializer

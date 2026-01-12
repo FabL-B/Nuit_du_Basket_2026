@@ -18,8 +18,10 @@ from planning.services_planning import (
     generer_planning_phase_globale,
     ErreurGenerationPlanning,
 )
+from api_admin.openapi.phases import schema_phases_admin
 
 
+@schema_phases_admin
 class PhaseGlobaleViewSet(viewsets.ModelViewSet):
     queryset = PhaseGlobale.objects.all().order_by("-id")
     serializer_class = PhaseGlobaleSerializer

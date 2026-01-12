@@ -10,8 +10,9 @@ from api_admin.openapi.matchs import (
     schema_generer_feuille,
     schema_saisir_score,
     schema_valider_score,
+    schema_swap_planning,
+    schema_forfait,
 )
-
 from api_admin.serializers.matchs import MatchSerializer
 from api_admin.serializers.feuilles import MatchSheetSerializer
 from api_admin.serializers.scores import SaisieScoreSerializer
@@ -155,6 +156,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @schema_swap_planning
     @action(detail=False, methods=["post"], url_path="swap-planning")
     def swap_planning(self, request):
         serializer = SwapPlanningSerializer(data=request.data)
@@ -177,6 +179,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @schema_forfait
     @action(detail=True, methods=["post"], url_path="forfait")
     def forfait(self, request, pk=None):
         match = self.get_object()
