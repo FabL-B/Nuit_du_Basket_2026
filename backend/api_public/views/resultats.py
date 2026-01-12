@@ -23,7 +23,7 @@ class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
             "equipe_b",
             "score",
         )
-        .filter(score__isnull=False)
+        .filter(score__isnull=False, score__valide_le__isnull=False)
         .order_by("creneau__debut", "terrain__ordre", "id")
     )
 
@@ -35,7 +35,6 @@ class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
         phase = self.request.query_params.get("phase")
         groupe = self.request.query_params.get("groupe")
 
-        # Edition par défaut : dernière
         if edition:
             qs = qs.filter(edition_id=edition)
         else:

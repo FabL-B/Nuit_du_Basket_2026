@@ -1,5 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
+from django.utils import timezone
+from datetime import datetime
 
 from core.models import Edition
 from tournois.models import Tournoi, CodeTournoi
@@ -7,8 +9,6 @@ from phases.models import PhaseGlobale, TypePhaseGlobale, SousPhase
 from inscriptions.models import Equipe, StatutEquipe
 from planning.models import Terrain, Creneau
 from matchs.models import Match, Score
-from django.utils import timezone
-from datetime import datetime
 
 pytestmark = pytest.mark.django_db
 
@@ -38,11 +38,17 @@ def setup_resultats_minimal():
         terrain=terrain,
     )
 
-    Score.objects.create(match=match, points_a=10, points_b=8)
+    Score.objects.create(
+        match=match,
+        points_a=10,
+        points_b=8,
+        valide_le=timezone.now(),
+    )
+
     return edition
 
 
-def test_public_resultats_only_matches_with_score():
+def test_public_resultats_only_validated_scores():
     client = APIClient()
     setup_resultats_minimal()
 
