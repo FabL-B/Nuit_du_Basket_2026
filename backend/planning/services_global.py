@@ -10,6 +10,8 @@ from django.utils import timezone
 from core.models import Edition
 from phases.models import PhaseGlobale, TypePhaseGlobale
 from planning.models import PausePlanning, Creneau
+from planning.services_pauses import recalculer_debuts_creneaux_avec_pauses
+from planning import services_planning
 
 
 class ErreurPlanningGlobal(Exception):
@@ -50,14 +52,13 @@ def generer_planning_global(
         raise ErreurPlanningGlobal("phase_finale invalide (édition ou type).")
 
     # 1) planning phase 1
-    from planning.services_planning import generer_planning_phase_globale
-    res1 = generer_planning_phase_globale(phase1)
+    res1 = services_planning.generer_planning_phase_globale(phase1)
 
     # 2) planning phase 2
-    res2 = generer_planning_phase_globale(phase2) if phase2 else None
+    res2 = services_planning.generer_planning_phase_globale(phase2) if phase2 else None
 
     # 3) planning finale
-    resf = generer_planning_phase_globale(phase_finale) if phase_finale else None
+    resf = services_planning.generer_planning_phase_globale(phase_finale) if phase_finale else None
 
     # snapshot des débuts AVANT (pour compter)
     before = dict(
@@ -90,7 +91,6 @@ def generer_planning_global(
         pause_creee = True
 
     # 5) recalcul des débuts de créneaux avec pauses
-    from planning.services_pauses import recalculer_debuts_creneaux_avec_pauses
     recalculer_debuts_creneaux_avec_pauses(edition)
 
     # snapshot APRES + comptage
