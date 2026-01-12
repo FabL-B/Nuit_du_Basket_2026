@@ -34,9 +34,9 @@
 
 ---
 
-## Phase 4 — Transitions & Phases avancées 🟨
+## Phase 4 — Transitions & Phases avancées ✅
 
-### 4.1 Clôture Phase 1 🟨
+### 4.1 Clôture Phase 1 ✅
 
 * Tous les matchs doivent être finalisés
 * Classements recalculés et cohérents
@@ -47,7 +47,7 @@
 
 ---
 
-### 4.2 Passage Phase 1 → Phase 2 🟨 (règles figées, implémentation en pause)
+### 4.2 Passage Phase 1 → Phase 2 ✅ (règles figées, implémentation en pause)
 
 * Phase 2 composée de deux branches :
 
@@ -64,7 +64,7 @@
 
 ---
 
-### 4.3 Groupes Phase 2 🟨 (règles clarifiées)
+### 4.3 Groupes Phase 2 ✅ (règles clarifiées)
 
 * **Groupes de 3 équipes autorisés**
 * Groupes de 4 ou 5 toujours autorisés
@@ -81,24 +81,24 @@
 
 ---
 
-### 4.4 Génération matchs Phase 2 ⬜
+### 4.4 Génération matchs Phase 2 ✅
 
 * Round-robin intra-groupe
 * Règles identiques à Phase 1
 
 ---
 
-### 4.5 Phase Finale ⬜
+### 4.5 Phase Finale ✅
 
 * Règles non définies
 * Hors scope actuel
 
 ---
 
-## Phase 5 — API Admin & Sécurité 🟨
+## Phase 5 — API Admin & Sécurité ✅
 
 * 5.1 Permissions admin globales (is_staff) ✅
-* 5.2 Endpoints admin CRUD (Editions, Tournois, Phases, Groupes, Matchs) 🟨
+* 5.2 Endpoints admin CRUD (Editions, Tournois, Phases, Groupes, Matchs) ✅
 * 5.3 Actions admin métier :
 
   * swap équipes
