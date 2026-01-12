@@ -7,11 +7,13 @@ from api_public.serializers.groupes import (
     GroupePublicSerializer,
     GroupeDetailPublicSerializer,
 )
+from api_public.openapi.groupes import schema_groupes_public
 
 
+@schema_groupes_public
 class GroupeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
-
+    authentication_classes = []
     queryset = (
         Groupe.objects
         .select_related(

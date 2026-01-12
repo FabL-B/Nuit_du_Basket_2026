@@ -4,12 +4,14 @@ from rest_framework.permissions import AllowAny
 from core.models import Edition
 from matchs.models import Match
 from api_public.serializers.planning import PlanningPublicSerializer
+from api_public.openapi.resultats import schema_resultats_public
 
 
+@schema_resultats_public
 class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     serializer_class = PlanningPublicSerializer
-
+    authentication_classes = []
     queryset = (
         Match.objects
         .select_related(

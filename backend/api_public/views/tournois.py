@@ -4,12 +4,14 @@ from rest_framework.permissions import AllowAny
 from core.models import Edition
 from tournois.models import Tournoi
 from api_public.serializers.tournois import TournoiPublicSerializer
+from api_public.openapi.tournois import schema_tournois_public
 
 
+@schema_tournois_public
 class TournoiViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     serializer_class = TournoiPublicSerializer
-
+    authentication_classes = []
     queryset = Tournoi.objects.select_related("edition").order_by("edition__date_evenement", "code")
 
     def get_queryset(self):
