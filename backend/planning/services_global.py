@@ -29,11 +29,11 @@ class ResumePlanningGlobal:
 def generer_planning_global(
     edition: Edition,
     phase1: PhaseGlobale,
-    phase2: Optional[PhaseGlobale],
-    phase_finale: Optional[PhaseGlobale],
+    phase2: Optional[PhaseGlobale] = None,
+    phase_finale: Optional[PhaseGlobale] = None,
     *,
-    heure_debut_concours: Optional[time],
-    duree_concours_minutes: Optional[int],
+    heure_debut_concours: Optional[time] = None,
+    duree_concours_minutes: Optional[int] = None,
 ) -> ResumePlanningGlobal:
     """
     Orchestrateur:
@@ -74,9 +74,11 @@ def generer_planning_global(
         if duree_concours_minutes <= 0:
             raise ErreurPlanningGlobal("Concours shoot: durée invalide.")
 
-        debut_dt = timezone.make_aware(
-            timezone.datetime.combine(edition.date_evenement, heure_debut_concours)
-        )
+        if PausePlanning.objects.filter(edition=edition, est_active=True).exists():
+            raise ErreurPlanningGlobal("Une pause active existe déjà pour cette édition.")
+
+        debut_dt = timezone.datetime.combine(edition.date_evenement, heure_debut_concours)
+        debut_dt = timezone.make_aware(debut_dt, timezone.get_current_timezone())
 
         PausePlanning.objects.create(
             edition=edition,
