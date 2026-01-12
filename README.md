@@ -61,6 +61,37 @@ La description complète de l’architecture se trouve dans :
 
 ---
 
+## 3bis. Flux de génération (API admin)
+
+La génération d’un tournoi complet suit un **pipeline strict et contrôlé**, exécuté uniquement par des administrateurs.
+
+### Phase 1
+1. Création de l’édition
+2. Génération des sous-phases
+3. Génération des groupes (phase 1)
+4. Génération des matchs (round-robin)
+5. Saisie et validation des scores
+6. Clôture de la phase
+
+### Phase 2
+7. Prévisualisation de la phase 2 (calcul des qualifiés)
+8. Décision admin en cas de tournoi impair (Challenge / Consolante)
+9. Génération effective de la phase 2
+
+### Planning
+10. Génération du planning par phase
+11. Génération du planning global à l’échelle de l’édition
+    - affectation créneaux / terrains
+    - gestion des pauses
+    - recalcul horaire idempotent
+
+Chaque étape est protégée par :
+- des validations métier
+- des garde-fous anti-régénération
+- des permissions strictes
+
+---
+
 ## 4. Documentation du projet
 
 Les documents suivants font foi et doivent être lus dans cet ordre :
@@ -142,6 +173,29 @@ python manage.py runserver
 
 ---
 
+## 6bis. Exemple d’usage (admin)
+
+Exemple de génération d’un planning global :
+
+1. Création de l’édition
+2. Génération des sous-phases
+3. Génération des groupes et matchs
+4. Clôture de la phase
+5. Génération du planning global
+
+```http
+POST /api/admin/editions/{id}/planning-global/generer/
+````
+
+Cette action :
+
+* planifie tous les matchs
+* affecte terrains et créneaux
+* applique les pauses éventuelles
+* refuse toute régénération ultérieure
+
+---
+
 ## 7. Tests
 
 Les règles métier critiques sont couvertes par des **tests unitaires**.
@@ -167,11 +221,20 @@ pytest
 
 ## 9. Sécurité et accès
 
-* Accès réservé aux **administrateurs**
-* Permissions basées sur :
+L’API distingue clairement deux niveaux :
 
-  * `IsAdminUser`
-* Aucun endpoint public en écriture
+### API admin
+* Accès strictement réservé aux administrateurs
+* Permissions basées sur `IsAdminUser`
+* Actions sensibles protégées contre :
+  - la régénération accidentelle
+  - les incohérences métier
+  - les appels non autorisés
+
+### API publique (à venir)
+* Lecture seule
+* Aucune modification possible
+* Exposition contrôlée des données (planning, résultats)s
 
 ---
 
