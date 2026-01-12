@@ -27,6 +27,15 @@ class ResumePlanningGlobal:
     creneaux_deplaces: int
 
 
+def _safe_generer(phase):
+    if not phase:
+        return None
+    try:
+        return services_planning.generer_planning_phase_globale(phase)
+    except services_planning.ErreurGenerationPlanning as e:
+        raise ErreurPlanningGlobal(str(e))
+
+
 @transaction.atomic
 def generer_planning_global(
     edition: Edition,
@@ -56,13 +65,11 @@ def generer_planning_global(
         raise ErreurPlanningGlobal("phase_finale invalide (édition ou type).")
 
     # 1) planning phase 1
-    res1 = services_planning.generer_planning_phase_globale(phase1)
-
+    res1 = _safe_generer(phase1)
     # 2) planning phase 2
-    res2 = services_planning.generer_planning_phase_globale(phase2) if phase2 else None
-
+    res2 = _safe_generer(phase2)
     # 3) planning finale
-    resf = services_planning.generer_planning_phase_globale(phase_finale) if phase_finale else None
+    resf = _safe_generer(phase_finale)
 
     # snapshot des débuts AVANT (pour compter)
     before = dict(Creneau.objects.filter(edition=edition).values_list("id", "debut"))
