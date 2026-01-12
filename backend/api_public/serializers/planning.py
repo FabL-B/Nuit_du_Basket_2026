@@ -15,8 +15,11 @@ class PlanningPublicSerializer(serializers.Serializer):
     score = serializers.SerializerMethodField()
 
     def get_score(self, obj):
-        # adapte si ton Score est en OneToOne related_name="score" par ex.
-        score = getattr(obj, "score", None)
+        try:
+            score = obj.score
+        except Exception:
+            score = None
+
         if score:
             return {"points_a": score.points_a, "points_b": score.points_b}
         return None
