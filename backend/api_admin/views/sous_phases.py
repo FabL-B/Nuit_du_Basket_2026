@@ -5,9 +5,12 @@ from rest_framework.response import Response
 
 from phases.models import SousPhase
 from groupes.services_phase1 import generer_groupes_phase1_pour_sous_phase, ErreurGenerationGroupes
+from api_admin.serializers.sous_phases import SousPhaseSerializer
 
 
 class SousPhaseViewSet(viewsets.ReadOnlyModelViewSet):
+
+    serializer_class = SousPhaseSerializer
     permission_classes = [IsAdminUser]
     queryset = (
         SousPhase.objects.all()
