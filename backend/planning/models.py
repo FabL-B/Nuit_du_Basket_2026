@@ -86,13 +86,6 @@ class TypeSlot(models.TextChoices):
 
 
 class PlanningSlot(models.Model):
-    """
-    Un slot = l'occupation d'un terrain sur un créneau.
-
-    - type=MATCH => match obligatoire
-    - type=CONCOURS_SHOOT => match interdit (pause globale)
-    """
-
     edition = models.ForeignKey(
         "core.Edition",
         on_delete=models.PROTECT,
@@ -119,7 +112,6 @@ class PlanningSlot(models.Model):
         related_name="planning_slot",
     )
 
-    # Méta “debug/filtre” (optionnel mais très utile)
     phase_globale = models.ForeignKey(
         "phases.PhaseGlobale",
         on_delete=models.PROTECT,
@@ -139,44 +131,45 @@ class PlanningSlot(models.Model):
 
     class Meta:
         constraints = [
-            # Un terrain ne peut avoir qu'un slot sur un créneau
             models.UniqueConstraint(
                 fields=["creneau", "terrain"],
                 name="unique_slot_par_creneau_et_terrain",
             ),
-            # Optionnel mais fort : empêcher slots cross-édition incohérents
-            models.UniqueConstraint(
-                fields=["edition", "creneau", "terrain"],
-                name="unique_slot_par_edition_creneau_terrain",
+            # type MATCH => match not null
+            models.CheckConstraint(
+                condition=(
+                    models.Q(type_slot=TypeSlot.MATCH, match__isnull=False)
+                    | models.Q(type_slot=TypeSlot.CONCOURS_SHOOT, match__isnull=True)
+                ),
+                name="check_slot_type_vs_match",
             ),
+        ]
+        indexes = [
+            models.Index(fields=["edition", "type_slot"]),
+            models.Index(fields=["edition", "phase_globale"]),
         ]
 
     def clean(self) -> None:
         erreurs = {}
 
-        # Cohérence édition
-        if self.creneau_id and self.edition_id:
+        if self.edition_id and self.creneau_id:
             if self.creneau.edition_id != self.edition_id:
                 erreurs["creneau"] = "Le créneau n'appartient pas à cette édition."
 
-        if self.terrain_id and self.edition_id:
+        if self.edition_id and self.terrain_id:
             if self.terrain.edition_id != self.edition_id:
                 erreurs["terrain"] = "Le terrain n'appartient pas à cette édition."
 
-        # Règles type_slot <-> match
-        if self.type_slot == TypeSlot.MATCH:
-            if self.match_id is None:
-                erreurs["match"] = "Un slot de type MATCH doit référencer un match."
-        elif self.type_slot == TypeSlot.CONCOURS_SHOOT:
-            if self.match_id is not None:
-                erreurs["match"] = "Un slot CONCOURS_SHOOT ne doit pas référencer de match."
-        else:
-            erreurs["type_slot"] = "Type de slot invalide."
-
-        # Cohérence match si présent
-        if self.match_id and self.edition_id:
-            if self.match.edition_id != self.edition_id:
+        # cohérence match si présent
+        if self.match_id:
+            if self.edition_id and self.match.edition_id != self.edition_id:
                 erreurs["match"] = "Le match n'appartient pas à cette édition."
+
+            # meta debug doit correspondre au match si fourni
+            if self.phase_globale_id and self.match.phase_globale_id != self.phase_globale_id:
+                erreurs["phase_globale"] = "phase_globale incohérente avec le match."
+            if self.sous_phase_id and self.match.sous_phase_id != self.sous_phase_id:
+                erreurs["sous_phase"] = "sous_phase incohérente avec le match."
 
         if erreurs:
             raise ValidationError(erreurs)
