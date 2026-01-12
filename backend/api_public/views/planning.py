@@ -21,6 +21,7 @@ class PlanningViewSet(viewsets.ReadOnlyModelViewSet):
             "groupe",
             "equipe_a",
             "equipe_b",
+            "score",
         )
         .filter(creneau__isnull=False, terrain__isnull=False)
         .order_by("creneau__debut", "terrain__ordre", "id")

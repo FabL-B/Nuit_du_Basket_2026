@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from matchs.models import Score
+
 
 class PlanningPublicSerializer(serializers.Serializer):
     match_id = serializers.IntegerField(source="id")
@@ -17,9 +19,7 @@ class PlanningPublicSerializer(serializers.Serializer):
     def get_score(self, obj):
         try:
             score = obj.score
-        except Exception:
-            score = None
+        except Score.DoesNotExist:
+            return None
+        return {"points_a": score.points_a, "points_b": score.points_b}
 
-        if score:
-            return {"points_a": score.points_a, "points_b": score.points_b}
-        return None
