@@ -3,9 +3,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
-from phases.models import PhaseGlobale
+from phases.models import PhaseGlobale, SousPhase
 from api_admin.serializers.phases import PhaseGlobaleSerializer
 
+from phases.services.sous_phases import (
+    generer_sous_phases_pour_phase_globale,
+    ErreurGenerationSousPhases,
+)
 from phases.services.cloture import cloturer_phase_globale, ErreurCloturePhase
 from phases.services.phases2 import previsualiser_phase2_depuis_phase1, ErreurGenerationPhase2
 from matchs.services_generation import generer_matchs_pour_phase_globale, ErreurGenerationMatchs
@@ -91,6 +95,25 @@ class PhaseGlobaleViewSet(viewsets.ModelViewSet):
                 "matchs_planifies": resume.matchs_planifies,
                 "creneaux_crees": resume.creneaux_utilises,
                 "detail": "Planning généré avec succès.",
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="generer-sous-phases")
+    def generer_sous_phases(self, request, pk=None):
+        phase_globale = self.get_object()
+
+        try:
+            sous_phases = generer_sous_phases_pour_phase_globale(phase_globale)
+        except ErreurGenerationSousPhases as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "created": True,
+                "sous_phases_creees": len(sous_phases),
+                "sous_phase_ids": [sp.id for sp in sous_phases],
+                "phase_globale_id": phase_globale.id,
             },
             status=status.HTTP_200_OK,
         )
