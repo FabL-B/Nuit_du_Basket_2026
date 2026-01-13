@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { fetchResultats } from "../../api/public";
 import { normalizeListResponse } from "../../utils/normalize";
 import DataTable from "../tables/DataTable";
+import { formatParisDateTime } from "../../utils/datetime";
+
 
 export default function ResultatsView({ params }) {
   const [items, setItems] = useState([]);
@@ -39,7 +41,35 @@ export default function ResultatsView({ params }) {
       </div>
 
       <div style={{ marginTop: 12 }}>
-        <DataTable items={items} />
+        <DataTable
+          items={items}
+          getRowKey={(r) => r.match_id}
+          columns={[
+            {
+              key: "debut",
+              label: "Heure",
+              render: (r) => formatParisDateTime(r.debut),
+            },
+            { key: "terrain", label: "Terrain" },
+            { key: "tournoi", label: "Tournoi" },
+            { key: "phase", label: "Phase" },
+            { key: "groupe", label: "Groupe" },
+            {
+              key: "match",
+              label: "Match",
+              render: (r) => `${r.equipe_a} vs ${r.equipe_b}`,
+            },
+            {
+              key: "score",
+              label: "Score",
+              render: (r) => {
+                if (!r.score) return "—";
+                const { points_a, points_b } = r.score;
+                return `${points_a} - ${points_b}`;
+              },
+            },
+          ]}
+        />
       </div>
     </div>
   );
