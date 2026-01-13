@@ -22,3 +22,14 @@ export async function fetchPlanning(params) {
 
   return response.json();
 }
+
+export async function fetchResultats(params) {
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${BASE_URL}/api/public/resultats/?${query}`);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
