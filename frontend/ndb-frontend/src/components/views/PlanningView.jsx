@@ -19,7 +19,7 @@ export default function PlanningView({ params }) {
         setError(err.message);
         setLoading(false);
       });
-  }, [params]);
+  }, [JSON.stringify(params)]);
 
   if (loading) return <p>Chargement du planning…</p>;
   if (error) return <p style={{ color: "red" }}>Erreur : {error}</p>;

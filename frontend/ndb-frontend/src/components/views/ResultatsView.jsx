@@ -19,7 +19,7 @@ export default function ResultatsView({ params }) {
         setError(err.message);
         setLoading(false);
       });
-  }, [params]);
+  }, [JSON.stringify(params)]);
 
   if (loading) return <p>Chargement des résultats…</p>;
   if (error) return <p style={{ color: "red" }}>Erreur : {error}</p>;

@@ -11,7 +11,10 @@ export async function fetchEditions() {
 }
 
 export async function fetchPlanning(params) {
-  const query = new URLSearchParams(params).toString();
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v)
+  );
+  const query = new URLSearchParams(cleanParams).toString();
   const response = await fetch(
     `${BASE_URL}/api/public/planning/?${query}`
   );
@@ -24,7 +27,10 @@ export async function fetchPlanning(params) {
 }
 
 export async function fetchResultats(params) {
-  const query = new URLSearchParams(params).toString();
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v)
+  );
+  const query = new URLSearchParams(cleanParams).toString();
   const response = await fetch(`${BASE_URL}/api/public/resultats/?${query}`);
 
   if (!response.ok) {
