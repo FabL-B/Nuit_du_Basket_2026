@@ -3,6 +3,7 @@ import { fetchPlanning } from "../../api/public";
 import { normalizeListResponse } from "../../utils/normalize";
 import DataTable from "../tables/DataTable";
 import { formatParisDateTime } from "../../utils/datetime";
+import Badge from "../ui/Badge";
 
 
 export default function PlanningView({ params }) {
@@ -19,7 +20,10 @@ export default function PlanningView({ params }) {
       .then((data) => {
         // support DRF pagination
         setRawCount(typeof data?.count === "number" ? data.count : null);
-        setItems(normalizeListResponse(data));
+        const list = normalizeListResponse(data).slice().sort((a, b) => {
+          return new Date(a.debut) - new Date(b.debut);
+        });
+        setItems(list);
         setLoading(false);
       })
       .catch((err) => {
@@ -52,9 +56,17 @@ export default function PlanningView({ params }) {
               render: (r) => formatParisDateTime(r.debut),
             },
             { key: "terrain", label: "Terrain" },
-            { key: "tournoi", label: "Tournoi" },
-            { key: "phase", label: "Phase" },
-            { key: "groupe", label: "Groupe" },
+            {
+              key: "ctx",
+              label: "Contexte",
+              render: (r) => (
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <Badge>{r.tournoi}</Badge>
+                  <Badge>{r.phase}</Badge>
+                  <Badge>Groupe {r.groupe}</Badge>
+                </div>
+              ),
+            },
             {
               key: "match",
               label: "Match",
@@ -63,7 +75,7 @@ export default function PlanningView({ params }) {
             {
               key: "score",
               label: "Score",
-              render: (r) => (r.score ? "Saisi" : "—"),
+              render: (r) => (r.score ? "Saisi" : "Non saisi"),
             },
           ]}
         />
