@@ -11,10 +11,6 @@ import {
   fetchTerrains,
 } from "../api/public";
 
-import TournoiSelect from "../components/filters/TournoiSelect";
-import GroupeSelect from "../components/filters/GroupeSelect";
-import TerrainSelect from "../components/filters/TerrainSelect";
-
 
 export default function Home() {
   const [sp, setSp] = useSearchParams();
@@ -122,33 +118,15 @@ export default function Home() {
       {error && <p style={{ color: "red" }}>Erreur éditions : {error}</p>}
 
       {!loading && !error && (
-        <>
-          <FiltersBar
-            editions={editions}
-            params={params}
-            onParamChange={onParamChange}
-          />
-
-          <TournoiSelect
-            tournois={tournois}
-            value={params.tournoi}
-            onChange={(v) => onParamChange("tournoi", v)}
-          />
-
-          <GroupeSelect
-            groupes={groupes}
-            value={params.groupe}
-            onChange={(v) => onParamChange("groupe", v)}
-          />
-
-          <TerrainSelect
-            terrains={terrains}
-            value={params.terrain}
-            onChange={(v) => onParamChange("terrain", v)}
-          />
-        </>
+        <FiltersBar
+          editions={editions}
+          tournois={tournois}
+          groupes={groupes}
+          terrains={terrains}
+          params={params}
+          onParamChange={onParamChange}
+        />
       )}
-
 
       <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
         <div style={{ fontWeight: 600, marginBottom: 8 }}>
