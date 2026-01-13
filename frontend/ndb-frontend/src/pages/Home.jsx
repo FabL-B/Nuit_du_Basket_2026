@@ -44,6 +44,12 @@ export default function Home() {
     setSp(copy, { replace: true });
   };
 
+  const resetFilters = () => {
+    const copy = new URLSearchParams();
+    copy.set("tab", tab);
+    setSp(copy, { replace: true });
+  };
+
   const params = useMemo(() => Object.fromEntries(sp.entries()), [sp]);
 
   const [editions, setEditions] = useState([]);
@@ -118,14 +124,30 @@ export default function Home() {
       {error && <p style={{ color: "red" }}>Erreur éditions : {error}</p>}
 
       {!loading && !error && (
-        <FiltersBar
-          editions={editions}
-          tournois={tournois}
-          groupes={groupes}
-          terrains={terrains}
-          params={params}
-          onParamChange={onParamChange}
-        />
+        <>
+          <FiltersBar
+            editions={editions}
+            tournois={tournois}
+            groupes={groupes}
+            terrains={terrains}
+            params={params}
+            onParamChange={onParamChange}
+          />
+
+          <button
+            onClick={resetFilters}
+            style={{
+              alignSelf: "flex-start",
+              padding: "6px 10px",
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              background: "#fafafa",
+              cursor: "pointer",
+            }}
+          >
+            Réinitialiser les filtres
+          </button>
+        </>
       )}
 
       <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
