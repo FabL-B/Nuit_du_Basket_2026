@@ -33,3 +33,24 @@ export async function fetchResultats(params) {
 
   return response.json();
 }
+
+export async function fetchTournois(params) {
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${BASE_URL}/api/public/tournois/?${query}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+export async function fetchGroupes(params) {
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${BASE_URL}/api/public/groupes/?${query}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+export async function fetchTerrains(params) {
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${BASE_URL}/api/public/terrains/?${query}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
