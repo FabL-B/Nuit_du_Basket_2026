@@ -5,10 +5,8 @@ from drf_spectacular.utils import (
     OpenApiExample,
 )
 
-from api_admin.serializers.phases import (
-    PhaseGlobaleSerializer,
-    Phase2GenererInputSerializer,
-)
+from api_admin.serializers.phases import PhaseGlobaleSerializer
+from api_admin.serializers.phase2 import Phase2GenererInputSerializer
 
 
 def _err400_example(name: str, msg: str):

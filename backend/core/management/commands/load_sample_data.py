@@ -5,11 +5,26 @@ from datetime import date
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.contrib.auth import get_user_model
 
 from core.models import Edition
 from tournois.models import Tournoi, CodeTournoi
 from inscriptions.models import Equipe, Joueur
+from planning.models import Terrain, TypeTerrain
 
+
+
+"""Utilisation:
+
+Générer (édition + 3 tournois + 20 équipes + 4 joueurs/équipe) :
+
+python manage.py load_sample_data --reset
+
+
+Changer les volumes :
+
+python manage.py load_sample_data --equipes-par-tournoi 20 --joueurs-par-equipe 4 --rese
+"""
 
 PRENOMS = [
     "Alex", "Sam", "Noah", "Lina", "Mila", "Nina", "Léo", "Hugo", "Jade", "Emma",
@@ -37,6 +52,36 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+
+        # --- Superadmin de démo ---
+        User = get_user_model()
+
+        admin_username = "admin"
+        admin_password = "admin"
+
+        admin_user = User.objects.filter(username=admin_username).first()
+        if not admin_user:
+            try:
+                # Cas standard Django
+                User.objects.create_superuser(
+                    username=admin_username,
+                    password=admin_password,
+                    email="admin@example.com",
+                )
+            except TypeError:
+                # Si ton User custom n'a pas "username" ou impose d'autres champs,
+                # fallback minimal : adapte ici selon ton modèle User.
+                admin_user = User.objects.create(
+                    username=admin_username,
+                    email="admin@example.com",
+                    is_staff=True,
+                    is_superuser=True,
+                )
+                admin_user.set_password(admin_password)
+                admin_user.save()
+
+        self.stdout.write(self.style.SUCCESS("Superadmin OK: username=admin / password=admin"))
+
         edition_nom: str = options["edition_nom"]
         date_evenement = date.fromisoformat(options["date_evenement"])
         equipes_par_tournoi: int = options["equipes_par_tournoi"]
@@ -115,6 +160,54 @@ class Command(BaseCommand):
                     f"{tournoi.get_code_display()}: +{to_create} équipes (total={existing_count + to_create})"
                 )
             )
+
+
+        # --- Terrains de démo (4 int / 4 ext) liés à l'édition ---
+        terrains_specs = [
+            ("Terrain Int 1", TypeTerrain.INTERIEUR, 1),
+            ("Terrain Int 2", TypeTerrain.INTERIEUR, 2),
+            ("Terrain Int 3", TypeTerrain.INTERIEUR, 3),
+            ("Terrain Int 4", TypeTerrain.INTERIEUR, 4),
+            ("Terrain Ext 1", TypeTerrain.EXTERIEUR, 5),
+            ("Terrain Ext 2", TypeTerrain.EXTERIEUR, 6),
+            ("Terrain Ext 3", TypeTerrain.EXTERIEUR, 7),
+            ("Terrain Ext 4", TypeTerrain.EXTERIEUR, 8),
+        ]
+
+        created_terrains = 0
+        updated_terrains = 0
+
+        for nom, type_terrain, ordre in terrains_specs:
+            obj, created = Terrain.objects.get_or_create(
+                edition=edition,
+                nom=nom,
+                defaults={
+                    "type_terrain": type_terrain,
+                    "ordre": ordre,
+                    "est_actif": True,
+                },
+            )
+
+            if created:
+                created_terrains += 1
+            else:
+                # Si déjà présent, on remet d'équerre type/ordre/actif
+                changed = False
+                if obj.type_terrain != type_terrain:
+                    obj.type_terrain = type_terrain
+                    changed = True
+                if obj.ordre != ordre:
+                    obj.ordre = ordre
+                    changed = True
+                if obj.est_actif is not True:
+                    obj.est_actif = True
+                    changed = True
+
+                if changed:
+                    obj.save(update_fields=["type_terrain", "ordre", "est_actif"])
+                    updated_terrains += 1
+
+        self.stdout.write(self.style.SUCCESS(f"Terrains OK: +{created_terrains} créés, {updated_terrains} mis à jour"))
 
         self.stdout.write(self.style.SUCCESS(f"Edition: {edition.nom} ({edition.date_evenement})"))
         self.stdout.write(self.style.SUCCESS(f"Equipes créées: {created_equipes}"))
