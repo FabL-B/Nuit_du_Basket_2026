@@ -4,6 +4,7 @@ import Tabs from "../components/Tabs";
 import { fetchEditions } from "../api/public";
 import PlanningView from "../components/views/PlanningView";
 import ResultatsView from "../components/views/ResultatsView";
+import FiltersBar from "../components/filters/FiltersBar";
 
 export default function Home() {
   const [sp, setSp] = useSearchParams();
@@ -11,7 +12,6 @@ export default function Home() {
   const tabFromUrl = sp.get("tab") || "planning";
   const [tab, setTab] = useState(tabFromUrl);
 
-  // garde tab synchronisé si l'URL change (ex: refresh, back/forward)
   useEffect(() => {
     setTab(tabFromUrl);
   }, [tabFromUrl]);
@@ -22,9 +22,17 @@ export default function Home() {
     setSp(copy, { replace: true });
   };
 
+  const onParamChange = (key, value) => {
+    const copy = new URLSearchParams(sp);
+
+    if (!value) copy.delete(key);
+    else copy.set(key, value);
+
+    setSp(copy, { replace: true });
+  };
+
   const params = useMemo(() => Object.fromEntries(sp.entries()), [sp]);
 
-  // On garde la liste d'éditions pour l'instant (ça servira aux filtres juste après)
   const [editions, setEditions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,35 +60,28 @@ export default function Home() {
         ]}
       />
 
-      {/* Debug URL params (utile pendant la mise en place des filtres) */}
+      {loading && <p>Chargement des éditions…</p>}
+      {error && <p style={{ color: "red" }}>Erreur éditions : {error}</p>}
+
+      {!loading && !error && (
+        <FiltersBar
+          editions={editions}
+          params={params}
+          onParamChange={onParamChange}
+        />
+      )}
+
       <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>Onglet actif : {tab}</div>
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>
+          Onglet actif : {tab}
+        </div>
         <div style={{ fontSize: 12, opacity: 0.8 }}>
           Query params : <code>{JSON.stringify(params)}</code>
         </div>
       </div>
 
-      {/* Vues séparées */}
       {tab === "planning" && <PlanningView params={params} />}
       {tab === "resultats" && <ResultatsView params={params} />}
-
-      {/* On garde ça temporairement : liste éditions (sera remplacée par un select filtre) */}
-      <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Éditions</h2>
-
-        {loading && <p>Chargement…</p>}
-        {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
-
-        {!loading && !error && (
-          <ul>
-            {editions.map((edition) => (
-              <li key={edition.id}>
-                {edition.nom} (id={edition.id})
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   );
 }
