@@ -5,6 +5,16 @@ import { fetchEditions } from "../api/public";
 import PlanningView from "../components/views/PlanningView";
 import ResultatsView from "../components/views/ResultatsView";
 import FiltersBar from "../components/filters/FiltersBar";
+import {
+  fetchTournois,
+  fetchGroupes,
+  fetchTerrains,
+} from "../api/public";
+
+import TournoiSelect from "../components/filters/TournoiSelect";
+import GroupeSelect from "../components/filters/GroupeSelect";
+import TerrainSelect from "../components/filters/TerrainSelect";
+
 
 export default function Home() {
   const [sp, setSp] = useSearchParams();
@@ -27,13 +37,23 @@ export default function Home() {
 
     if (!value) copy.delete(key);
     else copy.set(key, value);
-
+    if (key === "edition") {
+      copy.delete("tournoi");
+      copy.delete("groupe");
+      copy.delete("terrain");
+    }
+    if (key === "tournoi" || key === "phase") {
+      copy.delete("groupe");
+    }
     setSp(copy, { replace: true });
   };
 
   const params = useMemo(() => Object.fromEntries(sp.entries()), [sp]);
 
   const [editions, setEditions] = useState([]);
+  const [tournois, setTournois] = useState([]);
+  const [groupes, setGroupes] = useState([]);
+  const [terrains, setTerrains] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -48,6 +68,44 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!params.edition) {
+      setTournois([]);
+      return;
+    }
+
+    fetchTournois({ edition: params.edition })
+      .then(setTournois)
+      .catch(() => setTournois([]));
+  }, [params.edition]);
+
+  useEffect(() => {
+    if (!params.edition || !params.tournoi || !params.phase) {
+      setGroupes([]);
+      return;
+    }
+
+    fetchGroupes({
+      edition: params.edition,
+      tournoi: params.tournoi,
+      phase: params.phase,
+    })
+      .then(setGroupes)
+      .catch(() => setGroupes([]));
+  }, [params.edition, params.tournoi, params.phase]);
+
+  useEffect(() => {
+    if (!params.edition) {
+      setTerrains([]);
+      return;
+    }
+
+    fetchTerrains({ edition: params.edition })
+      .then(setTerrains)
+      .catch(() => setTerrains([]));
+  }, [params.edition]);
+
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
@@ -64,12 +122,33 @@ export default function Home() {
       {error && <p style={{ color: "red" }}>Erreur éditions : {error}</p>}
 
       {!loading && !error && (
-        <FiltersBar
-          editions={editions}
-          params={params}
-          onParamChange={onParamChange}
-        />
+        <>
+          <FiltersBar
+            editions={editions}
+            params={params}
+            onParamChange={onParamChange}
+          />
+
+          <TournoiSelect
+            tournois={tournois}
+            value={params.tournoi}
+            onChange={(v) => onParamChange("tournoi", v)}
+          />
+
+          <GroupeSelect
+            groupes={groupes}
+            value={params.groupe}
+            onChange={(v) => onParamChange("groupe", v)}
+          />
+
+          <TerrainSelect
+            terrains={terrains}
+            value={params.terrain}
+            onChange={(v) => onParamChange("terrain", v)}
+          />
+        </>
       )}
+
 
       <div style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
         <div style={{ fontWeight: 600, marginBottom: 8 }}>
