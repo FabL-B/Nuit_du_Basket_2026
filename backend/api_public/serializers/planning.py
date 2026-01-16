@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from datetime import timedelta
+from django.utils import timezone
 
 from matchs.models import Score
 
@@ -16,6 +18,8 @@ class PlanningPublicSerializer(serializers.Serializer):
     equipe_b = serializers.CharField(source="equipe_b.nom")
     score = serializers.SerializerMethodField()
 
+    statut = serializers.SerializerMethodField()
+
     def get_score(self, obj):
         try:
             score = obj.score
@@ -23,3 +27,15 @@ class PlanningPublicSerializer(serializers.Serializer):
             return None
         return {"points_a": score.points_a, "points_b": score.points_b}
 
+    def get_statut(self, obj):
+        now = self.context.get("now") or timezone.now()
+        duree = self.context.get("duree_minutes") or getattr(obj.creneau, "duree_minutes", 15)
+
+        debut = obj.creneau.debut
+        fin = debut + timedelta(minutes=int(duree))
+
+        if debut <= now < fin:
+            return "EN_COURS"
+        if now < debut:
+            return "A_VENIR"
+        return "TERMINE"
