@@ -27,7 +27,10 @@ class GroupeViewSet(viewsets.ReadOnlyModelViewSet):
             "sous_phase__tournoi",
             "sous_phase__tournoi__edition",
         )
-        .prefetch_related("equipes", "equipes__equipe")
+        .prefetch_related(
+            "equipes", "equipes__equipe",
+            "classements", "classements__equipe",
+        )
         .order_by("sous_phase__tournoi__code", "sous_phase__branche", "code", "id")
     )
 
@@ -40,7 +43,11 @@ class GroupeViewSet(viewsets.ReadOnlyModelViewSet):
         qs = super().get_queryset()
 
         edition = self.request.query_params.get("edition")
-        tournoi = self.request.query_params.get("tournoi") or self.request.query_params.get("tournoi_code")
+        tournoi = (
+            self.request.query_params.get("tournoi")
+            or self.request.query_params.get("tournoi_code")
+            or self.request.query_params.get("categorie")
+        )
         phase = self.request.query_params.get("phase")
         branche = self.request.query_params.get("branche")
 

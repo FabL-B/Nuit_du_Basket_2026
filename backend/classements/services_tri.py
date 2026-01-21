@@ -73,7 +73,9 @@ def ordonner_classement_groupe(groupe) -> list[Classement]:
     4) confrontation directe uniquement si égalité à 2
     5) rang_manuel (admin) en dernier recours
     """
-    rows = list(Classement.objects.filter(groupe=groupe).select_related("equipe"))
+    rows = list(rows) if rows is not None else list(
+        Classement.objects.filter(groupe=groupe).select_related("equipe")
+    )
     if not rows:
         return []
 
