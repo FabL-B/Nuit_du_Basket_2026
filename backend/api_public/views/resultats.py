@@ -29,7 +29,13 @@ class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
             "score",
         )
         # résultats = match planifié + score existant + validé
-        .filter(creneau__isnull=False, terrain__isnull=False, score__isnull=False, score__valide_le__isnull=False)
+        .filter(
+            creneau__isnull=False,
+            terrain__isnull=False,
+            score__isnull=False,
+            score__valide_le__isnull=False,
+            score__valide_par__isnull=False,
+        )
         .order_by("-score__valide_le", "creneau__debut", "terrain__ordre", "id")
     )
 

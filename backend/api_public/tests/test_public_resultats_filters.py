@@ -10,7 +10,8 @@ from groupes.models import Groupe
 from inscriptions.models import Equipe, StatutEquipe
 from planning.models import Terrain, Creneau
 from matchs.models import Match
-from matchs.models import Score  # adapte si Score est ailleurs
+from matchs.models import Score
+from django.contrib.auth import get_user_model
 
 pytestmark = pytest.mark.django_db
 
@@ -35,7 +36,16 @@ def setup_resultats():
         equipe_a=e1, equipe_b=e2, creneau=c, terrain=terrain
     )
 
-    score = Score.objects.create(match=m, points_a=21, points_b=17, valide_le=now)
+    User = get_user_model()
+    u = User.objects.create_user(username="u1", email="u1@test.com", password="x")
+
+    Score.objects.create(
+        match=m,
+        points_a=21,
+        points_b=17,
+        valide_le=now,
+        valide_par=u,
+    )
     return edition, tournoi, g, e1, m.id
 
 

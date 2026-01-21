@@ -1,6 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from datetime import datetime
 
 from core.models import Edition
@@ -38,11 +39,15 @@ def setup_resultats_minimal():
         terrain=terrain,
     )
 
+    User = get_user_model()
+    u = User.objects.create_user(username="u1", email="u1@test.com", password="x")
+
     Score.objects.create(
         match=match,
         points_a=10,
         points_b=8,
         valide_le=timezone.now(),
+        valide_par=u,
     )
 
     return edition
