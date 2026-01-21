@@ -9,6 +9,7 @@ from api_admin.views.matchs import MatchViewSet
 from api_admin.views.sous_phases import SousPhaseViewSet
 from api_admin.views.equipes import EquipeAdminViewSet
 from api_admin.views.joueurs import JoueurAdminViewSet
+from api_admin.views.planning import PlanningAdminViewSet
 
 
 router = DefaultRouter()
@@ -20,6 +21,7 @@ router.register("matchs", MatchViewSet, basename="match")
 router.register("sous-phases", SousPhaseViewSet, basename="sousphase")
 router.register("equipes", EquipeAdminViewSet, basename="equipe-admin")
 router.register("joueurs", JoueurAdminViewSet, basename="joueur-admin")
+router.register("planning", PlanningAdminViewSet, basename="planning-admin")
 
 urlpatterns = [
     path("", include(router.urls)),
