@@ -68,3 +68,39 @@ class EditionViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+
+    @action(detail=True, methods=["get"], url_path="stats")
+    def stats(self, request, pk=None):
+        edition = self.get_object()
+        group_by = request.query_params.get("group_by")
+
+        equipes_qs = Equipe.objects.filter(edition=edition).exclude(statut="BROUILLON")
+        joueurs_qs = Joueur.objects.filter(equipe__edition=edition).exclude(equipe__statut="BROUILLON")
+
+        if group_by in ("categorie", "tournoi"):
+            rows = (
+                equipes_qs.values("tournoi__code")
+                .annotate(
+                    equipes=Count("id"),
+                    joueurs=Count("joueurs"),
+                )
+                .order_by("tournoi__code")
+            )
+            return Response(
+                {
+                    "edition_id": edition.id,
+                    "group_by": "categorie",
+                    "rows": list(rows),
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {
+                "edition_id": edition.id,
+                "equipes": equipes_qs.count(),
+                "joueurs": joueurs_qs.count(),
+            },
+            status=status.HTTP_200_OK,
+        )
