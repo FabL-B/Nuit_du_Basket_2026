@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 
 from core.models import Edition
-from matchs.models import Match
+from matchs.models import Match, StatutMatch
 from api_public.serializers.planning import PlanningPublicSerializer
 from api_public.openapi.planning import schema_planning_public
 

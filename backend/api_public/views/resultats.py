@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 
 from core.models import Edition
-from matchs.models import Match
+from matchs.models import Match, StatutMatch
 from api_public.serializers.resultats import ResultatPublicSerializer
 from api_public.openapi.resultats import schema_resultats_public
 
@@ -32,9 +32,9 @@ class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
         .filter(
             creneau__isnull=False,
             terrain__isnull=False,
-            score__isnull=False,
-            score__valide_le__isnull=False,
-            score__valide_par__isnull=False,
+        ).filter(
+            Q(score__valide_le__isnull=False, score__valide_par__isnull=False)
+            | Q(statut__in=[StatutMatch.FORFAIT_A, StatutMatch.FORFAIT_B, StatutMatch.DOUBLE_FORFAIT])
         )
         .order_by("-score__valide_le", "creneau__debut", "terrain__ordre", "id")
     )
