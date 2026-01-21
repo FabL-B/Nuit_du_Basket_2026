@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from core.models import Edition
 from phases.models import PhaseGlobale
+from inscriptions.models import Equipe, Joueur
 from api_admin.serializers.editions import EditionSerializer
 from api_admin.openapi.editions import schema_editions_viewset, schema_generer_planning_global
 from api_admin.serializers.planning_global import PlanningGlobalInputSerializer
