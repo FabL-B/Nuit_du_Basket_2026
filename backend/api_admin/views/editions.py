@@ -69,7 +69,6 @@ class EditionViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
-
     @action(detail=True, methods=["get"], url_path="stats")
     def stats(self, request, pk=None):
         edition = self.get_object()
