@@ -13,7 +13,9 @@ pytestmark = pytest.mark.django_db
 
 def mk_admin():
     User = get_user_model()
-    return User.objects.create_superuser(username="admin", email="admin@test.com", password="admin123")
+    return User.objects.create_superuser(
+        username="admin", email="admin@test.com", password="admin123"
+    )
 
 
 def setup_phase1_avec_tournois_et_equipes():
@@ -63,26 +65,36 @@ def test_phase2_generer_ok():
     phase1 = setup_phase1_avec_tournois_et_equipes()
 
     # sous-phases
-    r_sp = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json")
+    r_sp = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json"
+    )
     assert r_sp.status_code == 200, r_sp.data
 
     # groupes (sur sous-phase rookie)
     sous_phase_id = SousPhase.objects.get(phase_globale=phase1, tournoi__code=CodeTournoi.ROOKIE).id
-    r_g = client.post(f"/api/admin/sous-phases/{sous_phase_id}/generer-groupes-phase1/", data={}, format="json")
+    r_g = client.post(
+        f"/api/admin/sous-phases/{sous_phase_id}/generer-groupes-phase1/", data={}, format="json"
+    )
     assert r_g.status_code == 200, r_g.data
 
     # matchs
-    r_m = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json")
+    r_m = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json"
+    )
     assert r_m.status_code == 200, r_m.data
 
     # finaliser + cloturer
     finaliser_tous_les_matchs_phase(client, phase1)
 
-    r_close = client.post(f"/api/admin/phases-globales/{phase1.id}/cloturer/", data={}, format="json")
+    r_close = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/cloturer/", data={}, format="json"
+    )
     assert r_close.status_code == 200, r_close.data
 
     # génération phase 2
-    r_gen = client.post(f"/api/admin/phases-globales/{phase1.id}/phase2-generer/", data={}, format="json")
+    r_gen = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/phase2-generer/", data={}, format="json"
+    )
     assert r_gen.status_code == 200, r_gen.data
     assert r_gen.data["created"] is True
     assert "phase2_id" in r_gen.data

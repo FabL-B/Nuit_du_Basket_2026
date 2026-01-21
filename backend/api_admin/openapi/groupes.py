@@ -20,8 +20,12 @@ schema_groupes_viewset = extend_schema_view(
             "Usage typique : filtrer par sous_phase pour afficher uniquement les groupes d'une sous-phase."
         ),
         parameters=[
-            OpenApiParameter("phase_globale", OpenApiTypes.INT, required=False, description="ID phase globale"),
-            OpenApiParameter("sous_phase", OpenApiTypes.INT, required=False, description="ID sous-phase"),
+            OpenApiParameter(
+                "phase_globale", OpenApiTypes.INT, required=False, description="ID phase globale"
+            ),
+            OpenApiParameter(
+                "sous_phase", OpenApiTypes.INT, required=False, description="ID sous-phase"
+            ),
             OpenApiParameter("tournoi", OpenApiTypes.INT, required=False, description="ID tournoi"),
         ],
         responses={200: GroupeSerializer(many=True), 403: REP_403},

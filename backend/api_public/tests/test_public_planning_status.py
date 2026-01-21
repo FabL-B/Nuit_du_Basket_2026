@@ -16,7 +16,9 @@ pytestmark = pytest.mark.django_db
 
 
 def setup_planning():
-    edition = Edition.objects.create(nom="NDB 2026", date_evenement=date(2026, 6, 20), duree_creneau_minutes=15)
+    edition = Edition.objects.create(
+        nom="NDB 2026", date_evenement=date(2026, 6, 20), duree_creneau_minutes=15
+    )
     terrain = Terrain.objects.create(edition=edition, nom="Terrain 1", ordre=1, est_actif=True)
 
     tournoi = Tournoi.objects.create(edition=edition, code=CodeTournoi.ROOKIE)
@@ -24,28 +26,60 @@ def setup_planning():
     sp = SousPhase.objects.create(phase_globale=phase1, tournoi=tournoi, branche="A")
     g = Groupe.objects.create(sous_phase=sp, code="A1")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
-    e3 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE)
-    e4 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
+    e3 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E3", statut=StatutEquipe.VALIDEE
+    )
+    e4 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E4", statut=StatutEquipe.VALIDEE
+    )
 
     now = timezone.now()
 
-    c_past = Creneau.objects.create(edition=edition, index=1, debut=now - timedelta(minutes=30), duree_minutes=15)
-    c_now = Creneau.objects.create(edition=edition, index=2, debut=now - timedelta(minutes=5), duree_minutes=15)
-    c_future = Creneau.objects.create(edition=edition, index=3, debut=now + timedelta(minutes=30), duree_minutes=15)
+    c_past = Creneau.objects.create(
+        edition=edition, index=1, debut=now - timedelta(minutes=30), duree_minutes=15
+    )
+    c_now = Creneau.objects.create(
+        edition=edition, index=2, debut=now - timedelta(minutes=5), duree_minutes=15
+    )
+    c_future = Creneau.objects.create(
+        edition=edition, index=3, debut=now + timedelta(minutes=30), duree_minutes=15
+    )
 
     m_past = Match.objects.create(
-        edition=edition, phase_globale=phase1, sous_phase=sp, groupe=g,
-        equipe_a=e1, equipe_b=e2, creneau=c_past, terrain=terrain
+        edition=edition,
+        phase_globale=phase1,
+        sous_phase=sp,
+        groupe=g,
+        equipe_a=e1,
+        equipe_b=e2,
+        creneau=c_past,
+        terrain=terrain,
     )
     m_now = Match.objects.create(
-        edition=edition, phase_globale=phase1, sous_phase=sp, groupe=g,
-        equipe_a=e1, equipe_b=e3, creneau=c_now, terrain=terrain
+        edition=edition,
+        phase_globale=phase1,
+        sous_phase=sp,
+        groupe=g,
+        equipe_a=e1,
+        equipe_b=e3,
+        creneau=c_now,
+        terrain=terrain,
     )
     m_future = Match.objects.create(
-        edition=edition, phase_globale=phase1, sous_phase=sp, groupe=g,
-        equipe_a=e1, equipe_b=e4, creneau=c_future, terrain=terrain
+        edition=edition,
+        phase_globale=phase1,
+        sous_phase=sp,
+        groupe=g,
+        equipe_a=e1,
+        equipe_b=e4,
+        creneau=c_future,
+        terrain=terrain,
     )
 
     return edition, e1, (m_past.id, m_now.id, m_future.id)

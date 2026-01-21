@@ -37,7 +37,9 @@ class EditionViewSet(viewsets.ModelViewSet):
             phase1 = PhaseGlobale.objects.get(id=phase1_id, edition=edition)
             phase2 = PhaseGlobale.objects.get(id=phase2_id, edition=edition) if phase2_id else None
             phase_finale = (
-                PhaseGlobale.objects.get(id=phase_finale_id, edition=edition) if phase_finale_id else None
+                PhaseGlobale.objects.get(id=phase_finale_id, edition=edition)
+                if phase_finale_id
+                else None
             )
         except PhaseGlobale.DoesNotExist:
             return Response(
@@ -75,7 +77,9 @@ class EditionViewSet(viewsets.ModelViewSet):
         group_by = request.query_params.get("group_by")
 
         equipes_qs = Equipe.objects.filter(edition=edition).exclude(statut="BROUILLON")
-        joueurs_qs = Joueur.objects.filter(equipe__edition=edition).exclude(equipe__statut="BROUILLON")
+        joueurs_qs = Joueur.objects.filter(equipe__edition=edition).exclude(
+            equipe__statut="BROUILLON"
+        )
 
         if group_by in ("categorie", "tournoi"):
             rows = (

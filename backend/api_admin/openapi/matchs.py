@@ -1,7 +1,6 @@
 from drf_spectacular.utils import (
     extend_schema_view,
     extend_schema,
-
     OpenApiResponse,
     OpenApiExample,
 )

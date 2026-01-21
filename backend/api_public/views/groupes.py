@@ -20,16 +20,17 @@ class GroupeViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     authentication_classes = []
     queryset = (
-        Groupe.objects
-        .select_related(
+        Groupe.objects.select_related(
             "sous_phase",
             "sous_phase__phase_globale",
             "sous_phase__tournoi",
             "sous_phase__tournoi__edition",
         )
         .prefetch_related(
-            "equipes", "equipes__equipe",
-            "classements", "classements__equipe",
+            "equipes",
+            "equipes__equipe",
+            "classements",
+            "classements__equipe",
         )
         .order_by("sous_phase__tournoi__code", "sous_phase__branche", "code", "id")
     )

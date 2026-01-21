@@ -14,8 +14,7 @@ class EquipeViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = []
 
     queryset = (
-        Equipe.objects
-        .select_related("edition", "tournoi")
+        Equipe.objects.select_related("edition", "tournoi")
         .prefetch_related(
             "joueurs",
             "groupes",
@@ -36,7 +35,9 @@ class EquipeViewSet(viewsets.ReadOnlyModelViewSet):
 
         edition = self.request.query_params.get("edition")
         categorie = self.request.query_params.get("categorie")
-        tournoi = self.request.query_params.get("tournoi") or self.request.query_params.get("tournoi_code")
+        tournoi = self.request.query_params.get("tournoi") or self.request.query_params.get(
+            "tournoi_code"
+        )
         groupe = self.request.query_params.get("groupe")
 
         # alias categorie -> tournoi_code

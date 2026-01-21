@@ -13,7 +13,6 @@ from inscriptions.models import Equipe, Joueur
 from planning.models import Terrain, TypeTerrain
 
 
-
 """Utilisation:
 
 Générer (édition + 3 tournois + 20 équipes + 4 joueurs/équipe) :
@@ -27,12 +26,48 @@ python manage.py load_sample_data --equipes-par-tournoi 20 --joueurs-par-equipe 
 """
 
 PRENOMS = [
-    "Alex", "Sam", "Noah", "Lina", "Mila", "Nina", "Léo", "Hugo", "Jade", "Emma",
-    "Lucas", "Tom", "Eden", "Iris", "Sacha", "Zoé", "Max", "Enzo", "Liam", "Eva",
+    "Alex",
+    "Sam",
+    "Noah",
+    "Lina",
+    "Mila",
+    "Nina",
+    "Léo",
+    "Hugo",
+    "Jade",
+    "Emma",
+    "Lucas",
+    "Tom",
+    "Eden",
+    "Iris",
+    "Sacha",
+    "Zoé",
+    "Max",
+    "Enzo",
+    "Liam",
+    "Eva",
 ]
 NOMS = [
-    "Martin", "Bernard", "Dubois", "Thomas", "Robert", "Richard", "Petit", "Durand", "Leroy", "Moreau",
-    "Simon", "Laurent", "Lefebvre", "Michel", "Garcia", "David", "Bertrand", "Roux", "Vincent", "Fournier",
+    "Martin",
+    "Bernard",
+    "Dubois",
+    "Thomas",
+    "Robert",
+    "Richard",
+    "Petit",
+    "Durand",
+    "Leroy",
+    "Moreau",
+    "Simon",
+    "Laurent",
+    "Lefebvre",
+    "Michel",
+    "Garcia",
+    "David",
+    "Bertrand",
+    "Roux",
+    "Vincent",
+    "Fournier",
 ]
 
 
@@ -161,7 +196,6 @@ class Command(BaseCommand):
                 )
             )
 
-
         # --- Terrains de démo (4 int / 4 ext) liés à l'édition ---
         terrains_specs = [
             ("Terrain Int 1", TypeTerrain.INTERIEUR, 1),
@@ -207,7 +241,11 @@ class Command(BaseCommand):
                     obj.save(update_fields=["type_terrain", "ordre", "est_actif"])
                     updated_terrains += 1
 
-        self.stdout.write(self.style.SUCCESS(f"Terrains OK: +{created_terrains} créés, {updated_terrains} mis à jour"))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Terrains OK: +{created_terrains} créés, {updated_terrains} mis à jour"
+            )
+        )
 
         self.stdout.write(self.style.SUCCESS(f"Edition: {edition.nom} ({edition.date_evenement})"))
         self.stdout.write(self.style.SUCCESS(f"Equipes créées: {created_equipes}"))

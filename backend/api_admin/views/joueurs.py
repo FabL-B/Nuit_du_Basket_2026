@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAdminUser
 from inscriptions.models import Joueur
 from api_admin.serializers.equipes import JoueurAdminSerializer
 
+
 class JoueurAdminViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     serializer_class = JoueurAdminSerializer

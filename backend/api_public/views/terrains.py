@@ -12,7 +12,9 @@ class TerrainViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     serializer_class = TerrainPublicSerializer
     authentication_classes = []
-    queryset = Terrain.objects.select_related("edition").order_by("edition__date_evenement", "ordre", "id")
+    queryset = Terrain.objects.select_related("edition").order_by(
+        "edition__date_evenement", "ordre", "id"
+    )
 
     def get_queryset(self):
         qs = super().get_queryset()

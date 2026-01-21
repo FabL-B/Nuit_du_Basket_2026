@@ -13,7 +13,9 @@ pytestmark = pytest.mark.django_db
 
 def mk_admin():
     User = get_user_model()
-    return User.objects.create_superuser(username="admin", email="admin@test.com", password="admin123")
+    return User.objects.create_superuser(
+        username="admin", email="admin@test.com", password="admin123"
+    )
 
 
 def setup_phase1_minimale():
@@ -25,6 +27,7 @@ def setup_phase1_minimale():
 
     phase1 = PhaseGlobale.objects.create(edition=edition, type_phase=TypePhaseGlobale.PHASE_1)
     return phase1
+
 
 def setup_phase1_avec_tournois_et_equipes():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement="2026-06-20")
@@ -47,6 +50,7 @@ def setup_phase1_avec_tournois_et_equipes():
 
     return phase1
 
+
 def test_phase2_preview_ok():
     admin = mk_admin()
     client = APIClient()
@@ -55,7 +59,9 @@ def test_phase2_preview_ok():
     phase1 = setup_phase1_avec_tournois_et_equipes()
 
     # 1) Générer les sous-phases
-    r_sp = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json")
+    r_sp = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json"
+    )
     assert r_sp.status_code == 200, r_sp.data
 
     # 2) Récupérer une sous-phase Rookie (DB) pour générer les groupes
@@ -65,11 +71,15 @@ def test_phase2_preview_ok():
     ).id
 
     # 3) Générer les groupes phase 1
-    r_g = client.post(f"/api/admin/sous-phases/{sous_phase_id}/generer-groupes-phase1/", data={}, format="json")
+    r_g = client.post(
+        f"/api/admin/sous-phases/{sous_phase_id}/generer-groupes-phase1/", data={}, format="json"
+    )
     assert r_g.status_code == 200, r_g.data
 
     # 4) Générer les matchs de la phase 1 (round-robin)
-    r_m = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json")
+    r_m = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json"
+    )
     assert r_m.status_code == 200, r_m.data
 
     # 4bis) Finaliser tous les matchs (score + validation)
@@ -92,7 +102,9 @@ def test_phase2_preview_ok():
         assert r_val.status_code == 200, r_val.data
 
     # 5) Clôturer la phase 1
-    r_close = client.post(f"/api/admin/phases-globales/{phase1.id}/cloturer/", data={}, format="json")
+    r_close = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/cloturer/", data={}, format="json"
+    )
     assert r_close.status_code == 200, r_close.data
 
     # 6) Preview phase 2
@@ -100,6 +112,7 @@ def test_phase2_preview_ok():
     assert r_preview.status_code == 200, r_preview.data
     assert "phase2_id" in r_preview.data
     assert isinstance(r_preview.data.get("propositions"), list)
+
 
 def test_phase2_preview_refuse_si_phase1_non_cloturee():
     admin = mk_admin()
@@ -113,6 +126,7 @@ def test_phase2_preview_refuse_si_phase1_non_cloturee():
 
     assert r.status_code == 400, r.data
     assert "clôtur" in r.data["detail"].lower()
+
 
 def test_phase2_preview_refuse_si_pas_phase1():
     admin = mk_admin()

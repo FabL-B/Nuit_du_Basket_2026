@@ -5,6 +5,7 @@ class SwapPlanningSerializer(serializers.Serializer):
     match_a_id = serializers.IntegerField(min_value=1)
     match_b_id = serializers.IntegerField(min_value=1)
 
+
 class PlanningAdminRowSerializer(serializers.Serializer):
     match_id = serializers.IntegerField(source="id")
     debut = serializers.DateTimeField(source="creneau.debut", allow_null=True)

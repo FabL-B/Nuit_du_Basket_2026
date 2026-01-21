@@ -20,8 +20,12 @@ def setup_tournoi_groupe():
 
     g = Groupe.objects.create(sous_phase=sp, code="A1")
 
-    e1 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    e2 = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    e1 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    e2 = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
 
     GroupeEquipe.objects.create(groupe=g, equipe=e1, seed=1)
     GroupeEquipe.objects.create(groupe=g, equipe=e2, seed=2)

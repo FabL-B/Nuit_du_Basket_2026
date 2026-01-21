@@ -26,14 +26,35 @@ def setup_minimal():
 @pytest.mark.parametrize(
     "method,url_builder",
     [
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-sous-phases/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-matchs/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-planning/"),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-sous-phases/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-matchs/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-planning/",
+        ),
         ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/cloturer/"),
-        ("get",  lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-preview/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-generer/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/sous-phases/{sp.id}/generer-groupes-phase1/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/editions/{edition.id}/planning-global/generer/"),
+        (
+            "get",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-preview/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-generer/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/sous-phases/{sp.id}/generer-groupes-phase1/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/editions/{edition.id}/planning-global/generer/",
+        ),
     ],
 )
 def test_admin_endpoints_refuse_non_admin(method, url_builder):
@@ -56,14 +77,35 @@ def test_admin_endpoints_refuse_non_admin(method, url_builder):
 @pytest.mark.parametrize(
     "method,url_builder",
     [
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-sous-phases/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-matchs/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-planning/"),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-sous-phases/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-matchs/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/generer-planning/",
+        ),
         ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/cloturer/"),
-        ("get",  lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-preview/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-generer/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/sous-phases/{sp.id}/generer-groupes-phase1/"),
-        ("post", lambda edition, phase, sp: f"/api/admin/editions/{edition.id}/planning-global/generer/"),
+        (
+            "get",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-preview/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/phases-globales/{phase.id}/phase2-generer/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/sous-phases/{sp.id}/generer-groupes-phase1/",
+        ),
+        (
+            "post",
+            lambda edition, phase, sp: f"/api/admin/editions/{edition.id}/planning-global/generer/",
+        ),
     ],
 )
 def test_admin_endpoints_refuse_anonyme(method, url_builder):

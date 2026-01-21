@@ -12,7 +12,11 @@ from phases.services.sous_phases import (
     ErreurGenerationSousPhases,
 )
 from phases.services.cloture import cloturer_phase_globale, ErreurCloturePhase
-from phases.services.phases2 import previsualiser_phase2_depuis_phase1, generer_phase2_depuis_phase1, ErreurGenerationPhase2
+from phases.services.phases2 import (
+    previsualiser_phase2_depuis_phase1,
+    generer_phase2_depuis_phase1,
+    ErreurGenerationPhase2,
+)
 from matchs.services_generation import generer_matchs_pour_phase_globale, ErreurGenerationMatchs
 from planning.services_planning import (
     generer_planning_phase_globale,

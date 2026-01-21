@@ -23,7 +23,6 @@ schema_sous_phases_admin = extend_schema_view(
         summary="Détail d’une sous-phase",
         responses={200: SousPhaseSerializer},
     ),
-
     generer_groupes_phase1=extend_schema(
         tags=["Admin - Sous-phases"],
         summary="Générer les groupes (phase 1) pour une sous-phase",
@@ -50,7 +49,11 @@ schema_sous_phases_admin = extend_schema_view(
             ),
             400: OpenApiResponse(
                 description="Erreur métier de génération des groupes.",
-                examples=[_err400_example("Génération impossible", "Pas assez d’équipes pour générer des groupes.")],
+                examples=[
+                    _err400_example(
+                        "Génération impossible", "Pas assez d’équipes pour générer des groupes."
+                    )
+                ],
             ),
             403: OpenApiResponse(description="Non autorisé (admin requis)."),
         },

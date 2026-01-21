@@ -21,11 +21,16 @@ def setup_planning_public_minimal():
     terrain = Terrain.objects.create(edition=edition, nom="T1", ordre=1, est_actif=True)
 
     # 2 équipes + 1 match déjà planifié (on évite de dépendre des services admin)
-    equipe_a = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    equipe_b = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    equipe_a = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    equipe_b = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
 
     # Crée un créneau minimal (adapte si ton modèle Creneau exige autre chose)
     from planning.models import Creneau
+
     creneau = Creneau.objects.create(edition=edition, index=1, debut="2026-06-20T14:00:00Z")
 
     Match.objects.create(

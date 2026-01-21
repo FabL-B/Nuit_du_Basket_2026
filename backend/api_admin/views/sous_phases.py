@@ -14,11 +14,7 @@ class SousPhaseViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = SousPhaseSerializer
     permission_classes = [IsAdminUser]
-    queryset = (
-        SousPhase.objects.all()
-        .select_related("phase_globale", "tournoi")
-        .order_by("-id")
-    )
+    queryset = SousPhase.objects.all().select_related("phase_globale", "tournoi").order_by("-id")
     # serializer_class = SousPhaseSerializer  # si tu en as déjà un, sinon on peut laisser plus tard
 
     @action(detail=True, methods=["post"], url_path="generer-groupes-phase1")

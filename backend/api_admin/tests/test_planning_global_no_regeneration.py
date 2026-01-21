@@ -17,7 +17,7 @@ def mk_admin():
     return User.objects.create_superuser(
         username="admin", email="admin@test.com", password="admin123"
     )
-        
+
 
 def setup_phase1_complete():
     edition = Edition.objects.create(nom="NDB 2026", date_evenement="2026-06-20")
@@ -47,7 +47,9 @@ def setup_phase1_complete():
 
 def rendre_phase1_planifiable(client, phase1):
     # sous-phases
-    r_sp = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json")
+    r_sp = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json"
+    )
     assert r_sp.status_code == 200
 
     # groupes
@@ -55,11 +57,15 @@ def rendre_phase1_planifiable(client, phase1):
         phase_globale=phase1,
         tournoi__code=CodeTournoi.ROOKIE,
     ).id
-    r_g = client.post(f"/api/admin/sous-phases/{sp_id}/generer-groupes-phase1/", data={}, format="json")
+    r_g = client.post(
+        f"/api/admin/sous-phases/{sp_id}/generer-groupes-phase1/", data={}, format="json"
+    )
     assert r_g.status_code == 200
 
     # matchs
-    r_m = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json")
+    r_m = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json"
+    )
     assert r_m.status_code == 200
 
 

@@ -14,7 +14,9 @@ pytestmark = pytest.mark.django_db
 
 def mk_admin():
     User = get_user_model()
-    return User.objects.create_superuser(username="admin", email="admin@test.com", password="admin123")
+    return User.objects.create_superuser(
+        username="admin", email="admin@test.com", password="admin123"
+    )
 
 
 def test_planning_global_generer_ok():
@@ -37,19 +39,27 @@ def test_planning_global_generer_ok():
 
     # 8 équipes minimum pour phase 1
     for i in range(8):
-        Equipe.objects.create(edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE)
+        Equipe.objects.create(
+            edition=edition, tournoi=tournoi, nom=f"E{i+1}", statut=StatutEquipe.VALIDEE
+        )
 
     # Sous-phases
-    r_sp = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json")
+    r_sp = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json"
+    )
     assert r_sp.status_code == 200, r_sp.data
 
     # Groupes (rookie)
     sous_phase_id = SousPhase.objects.get(phase_globale=phase1, tournoi__code=CodeTournoi.ROOKIE).id
-    r_g = client.post(f"/api/admin/sous-phases/{sous_phase_id}/generer-groupes-phase1/", data={}, format="json")
+    r_g = client.post(
+        f"/api/admin/sous-phases/{sous_phase_id}/generer-groupes-phase1/", data={}, format="json"
+    )
     assert r_g.status_code == 200, r_g.data
 
     # Matchs
-    r_m = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json")
+    r_m = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json"
+    )
     assert r_m.status_code == 200, r_m.data
 
     # Planning global (sans phase2/finale pour commencer)
@@ -60,7 +70,9 @@ def test_planning_global_generer_ok():
         "heure_debut_concours": "18:00",
         "duree_concours_minutes": 90,
     }
-    r = client.post(f"/api/admin/editions/{edition.id}/planning-global/generer/", data=payload, format="json")
+    r = client.post(
+        f"/api/admin/editions/{edition.id}/planning-global/generer/", data=payload, format="json"
+    )
     assert r.status_code == 200, r.data
     assert r.data["edition_id"] == edition.id
     assert "resume" in r.data

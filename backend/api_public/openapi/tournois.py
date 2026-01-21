@@ -33,9 +33,24 @@ schema_tournois_public = extend_schema_view(
             OpenApiExample(
                 name="Exemple liste tournois",
                 value=[
-                    {"id": 1, "code": "ROOKIE", "nom": "Rookie", "edition": {"id": 3, "nom": "NDB 2026"}},
-                    {"id": 2, "code": "LOISIR", "nom": "Loisir", "edition": {"id": 3, "nom": "NDB 2026"}},
-                    {"id": 3, "code": "COMPETITEUR", "nom": "Compétiteur", "edition": {"id": 3, "nom": "NDB 2026"}},
+                    {
+                        "id": 1,
+                        "code": "ROOKIE",
+                        "nom": "Rookie",
+                        "edition": {"id": 3, "nom": "NDB 2026"},
+                    },
+                    {
+                        "id": 2,
+                        "code": "LOISIR",
+                        "nom": "Loisir",
+                        "edition": {"id": 3, "nom": "NDB 2026"},
+                    },
+                    {
+                        "id": 3,
+                        "code": "COMPETITEUR",
+                        "nom": "Compétiteur",
+                        "edition": {"id": 3, "nom": "NDB 2026"},
+                    },
                 ],
                 response_only=True,
             )

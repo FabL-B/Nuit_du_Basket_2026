@@ -44,7 +44,6 @@ schema_phases_admin = extend_schema_view(
         summary="Supprimer une phase globale",
         responses={204: OpenApiResponse(description="Supprimé.")},
     ),
-
     # --- Actions ---
     cloturer=extend_schema(
         tags=["Admin - Phases"],
@@ -68,12 +67,13 @@ schema_phases_admin = extend_schema_view(
             ),
             400: OpenApiResponse(
                 description="Erreur métier de clôture.",
-                examples=[_err400_example("Clôture impossible", "La phase ne peut pas être clôturée.")],
+                examples=[
+                    _err400_example("Clôture impossible", "La phase ne peut pas être clôturée.")
+                ],
             ),
             403: OpenApiResponse(description="Non autorisé (admin requis)."),
         },
     ),
-
     phase2_preview=extend_schema(
         tags=["Admin - Phases"],
         summary="Prévisualiser la génération de la phase 2",
@@ -95,12 +95,13 @@ schema_phases_admin = extend_schema_view(
             ),
             400: OpenApiResponse(
                 description="Erreur métier de génération phase 2.",
-                examples=[_err400_example("Preview impossible", "Impossible de prévisualiser la phase 2.")],
+                examples=[
+                    _err400_example("Preview impossible", "Impossible de prévisualiser la phase 2.")
+                ],
             ),
             403: OpenApiResponse(description="Non autorisé (admin requis)."),
         },
     ),
-
     generer_sous_phases=extend_schema(
         tags=["Admin - Phases"],
         summary="Générer les sous-phases d’une phase globale",
@@ -123,12 +124,13 @@ schema_phases_admin = extend_schema_view(
             ),
             400: OpenApiResponse(
                 description="Erreur métier de génération des sous-phases.",
-                examples=[_err400_example("Génération impossible", "Les sous-phases existent déjà.")],
+                examples=[
+                    _err400_example("Génération impossible", "Les sous-phases existent déjà.")
+                ],
             ),
             403: OpenApiResponse(description="Non autorisé (admin requis)."),
         },
     ),
-
     generer_matchs=extend_schema(
         tags=["Admin - Phases"],
         summary="Générer les matchs d’une phase globale",
@@ -150,12 +152,13 @@ schema_phases_admin = extend_schema_view(
             ),
             400: OpenApiResponse(
                 description="Erreur métier de génération des matchs.",
-                examples=[_err400_example("Génération impossible", "Aucun groupe pour cette phase.")],
+                examples=[
+                    _err400_example("Génération impossible", "Aucun groupe pour cette phase.")
+                ],
             ),
             403: OpenApiResponse(description="Non autorisé (admin requis)."),
         },
     ),
-
     generer_planning=extend_schema(
         tags=["Admin - Phases"],
         summary="Générer le planning d’une phase globale",
@@ -178,12 +181,13 @@ schema_phases_admin = extend_schema_view(
             ),
             400: OpenApiResponse(
                 description="Erreur métier de génération planning.",
-                examples=[_err400_example("Planning impossible", "Contraintes impossibles à satisfaire.")],
+                examples=[
+                    _err400_example("Planning impossible", "Contraintes impossibles à satisfaire.")
+                ],
             ),
             403: OpenApiResponse(description="Non autorisé (admin requis)."),
         },
     ),
-
     phase2_generer=extend_schema(
         tags=["Admin - Phases"],
         summary="Générer la phase 2 à partir de la phase 1",

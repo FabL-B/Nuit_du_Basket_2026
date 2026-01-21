@@ -17,8 +17,7 @@ class PlanningViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PlanningPublicSerializer
     authentication_classes = []
     queryset = (
-        Match.objects
-        .select_related(
+        Match.objects.select_related(
             "edition",
             "creneau",
             "terrain",

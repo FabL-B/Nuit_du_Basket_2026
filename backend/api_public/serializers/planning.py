@@ -32,8 +32,8 @@ class PlanningPublicSerializer(serializers.Serializer):
         except Score.DoesNotExist:
             return None
         return {
-            "points_a": score.points_a, 
-            "points_b": score.points_b, 
+            "points_a": score.points_a,
+            "points_b": score.points_b,
             "valide_le": score.valide_le,
         }
 

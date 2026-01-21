@@ -15,8 +15,7 @@ class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ResultatPublicSerializer
 
     queryset = (
-        Match.objects
-        .select_related(
+        Match.objects.select_related(
             "edition",
             "creneau",
             "terrain",
@@ -32,9 +31,16 @@ class ResultatsViewSet(viewsets.ReadOnlyModelViewSet):
         .filter(
             creneau__isnull=False,
             terrain__isnull=False,
-        ).filter(
+        )
+        .filter(
             Q(score__valide_le__isnull=False, score__valide_par__isnull=False)
-            | Q(statut__in=[StatutMatch.FORFAIT_A, StatutMatch.FORFAIT_B, StatutMatch.DOUBLE_FORFAIT])
+            | Q(
+                statut__in=[
+                    StatutMatch.FORFAIT_A,
+                    StatutMatch.FORFAIT_B,
+                    StatutMatch.DOUBLE_FORFAIT,
+                ]
+            )
         )
         .order_by("-score__valide_le", "creneau__debut", "terrain__ordre", "id")
     )

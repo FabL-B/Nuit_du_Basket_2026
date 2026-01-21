@@ -13,7 +13,9 @@ pytestmark = pytest.mark.django_db
 
 def mk_admin():
     User = get_user_model()
-    return User.objects.create_superuser(username="admin", email="admin@test.com", password="admin123")
+    return User.objects.create_superuser(
+        username="admin", email="admin@test.com", password="admin123"
+    )
 
 
 def setup_phase1_rookie_equipes(nb_equipes: int):
@@ -53,23 +55,31 @@ def finaliser_matchs(client, phase1):
 
 def rendre_phase1_cloturable(client, phase1):
     # sous-phases
-    r_sp = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json")
+    r_sp = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-sous-phases/", data={}, format="json"
+    )
     assert r_sp.status_code == 200, r_sp.data
 
     # groupes rookie
     sp_id = SousPhase.objects.get(phase_globale=phase1, tournoi__code=CodeTournoi.ROOKIE).id
-    r_g = client.post(f"/api/admin/sous-phases/{sp_id}/generer-groupes-phase1/", data={}, format="json")
+    r_g = client.post(
+        f"/api/admin/sous-phases/{sp_id}/generer-groupes-phase1/", data={}, format="json"
+    )
     assert r_g.status_code == 200, r_g.data
 
     # matchs
-    r_m = client.post(f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json")
+    r_m = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/generer-matchs/", data={}, format="json"
+    )
     assert r_m.status_code == 200, r_m.data
 
     # finaliser
     finaliser_matchs(client, phase1)
 
     # cloturer
-    r_close = client.post(f"/api/admin/phases-globales/{phase1.id}/cloturer/", data={}, format="json")
+    r_close = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/cloturer/", data={}, format="json"
+    )
     assert r_close.status_code == 200, r_close.data
 
 
@@ -83,7 +93,9 @@ def test_phase2_generer_refuse_si_decision_impair_absente():
     rendre_phase1_cloturable(client, phase1)
 
     # Appel sans decision_impair
-    r = client.post(f"/api/admin/phases-globales/{phase1.id}/phase2-generer/", data={}, format="json")
+    r = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/phase2-generer/", data={}, format="json"
+    )
     assert r.status_code == 400, r.data
     assert "décision" in r.data["detail"].lower()
 
@@ -112,7 +124,12 @@ def test_phase2_generer_refuse_decision_invalide():
         else:
             msg = str(r.data)
 
-    assert ("invalid" in msg.lower()) or ("inval" in msg.lower()) or ("attendu" in msg.lower()) or ("choice" in msg.lower())
+    assert (
+        ("invalid" in msg.lower())
+        or ("inval" in msg.lower())
+        or ("attendu" in msg.lower())
+        or ("choice" in msg.lower())
+    )
 
 
 def test_phase2_generer_ok_avec_decision_impair_valide():
@@ -124,7 +141,9 @@ def test_phase2_generer_ok_avec_decision_impair_valide():
     rendre_phase1_cloturable(client, phase1)
 
     payload = {"decision_impair": {CodeTournoi.ROOKIE: "CHALLENGE"}}
-    r = client.post(f"/api/admin/phases-globales/{phase1.id}/phase2-generer/", data=payload, format="json")
+    r = client.post(
+        f"/api/admin/phases-globales/{phase1.id}/phase2-generer/", data=payload, format="json"
+    )
     assert r.status_code == 200, r.data
     assert r.data["created"] is True
     assert r.data["phase2_id"] is not None

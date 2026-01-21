@@ -25,8 +25,12 @@ def setup_resultats_minimal():
     debut = timezone.make_aware(datetime(2026, 6, 20, 14, 0))
     creneau = Creneau.objects.create(edition=edition, index=1, debut=debut)
 
-    equipe_a = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE)
-    equipe_b = Equipe.objects.create(edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE)
+    equipe_a = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E1", statut=StatutEquipe.VALIDEE
+    )
+    equipe_b = Equipe.objects.create(
+        edition=edition, tournoi=tournoi, nom="E2", statut=StatutEquipe.VALIDEE
+    )
 
     match = Match.objects.create(
         edition=edition,
