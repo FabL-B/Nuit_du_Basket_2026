@@ -7,6 +7,7 @@ from api_public.views.tournois import TournoiViewSet
 from api_public.views.groupes import GroupeViewSet
 from api_public.views.editions import EditionViewSet
 from api_public.views.terrains import TerrainViewSet
+from api_public.views.equipes import EquipeViewSet
 
 
 router = DefaultRouter()
@@ -16,6 +17,7 @@ router.register("tournois", TournoiViewSet, basename="public-tournois")
 router.register("groupes", GroupeViewSet, basename="public-groupes")
 router.register("editions", EditionViewSet, basename="public-editions")
 router.register("terrains", TerrainViewSet, basename="public-terrains")
+router.register("equipes", EquipeViewSet, basename="public-equipes")
 
 urlpatterns = [
     path("", include(router.urls)),
