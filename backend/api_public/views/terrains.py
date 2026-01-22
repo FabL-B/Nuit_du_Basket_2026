@@ -31,7 +31,20 @@ class TerrainViewSet(viewsets.ReadOnlyModelViewSet):
 
         # public: par défaut ne montrer que les terrains actifs
         actif = self.request.query_params.get("actif")
-        if actif is None or actif == "1" or actif.lower() == "true":
+        if actif is None:
+            # défaut: seulement actifs
             qs = qs.filter(est_actif=True)
+        else:
+            val = actif.strip().lower()
+            truthy = {"1", "true", "yes"}
+            falsy = {"0", "false", "no"}
+            if val in truthy:
+                qs = qs.filter(est_actif=True)
+            elif val in falsy:
+                # on laisse tout (actifs + inactifs)
+                pass
+            else:
+                # valeur invalide -> défaut strict: actifs
+                qs = qs.filter(est_actif=True)
 
         return qs
