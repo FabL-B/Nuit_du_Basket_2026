@@ -22,4 +22,3 @@ class EditionViewSet(viewsets.ReadOnlyModelViewSet):
         if not ed:
             return Response({"detail": "Aucune édition."}, status=status.HTTP_404_NOT_FOUND)
         return Response(self.get_serializer(ed).data, status=status.HTTP_200_OK)
-    

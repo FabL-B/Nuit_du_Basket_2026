@@ -202,16 +202,3 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
-
-    @action(detail=True, methods=["post"], url_path="valider")
-    def valider(self, request, pk=None):
-        match = self.get_object()
-        try:
-            score = valider_score(match, request.user)
-        except ErreurScore as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(
-            {"match_id": match.id, "score_id": score.id, "valide_le": score.valide_le},
-            status=status.HTTP_200_OK,
-        )

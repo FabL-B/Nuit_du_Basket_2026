@@ -11,7 +11,9 @@ pytestmark = pytest.mark.django_db
 
 def mk_admin():
     User = get_user_model()
-    return User.objects.create_superuser(username="admin", email="admin@test.com", password="admin123")
+    return User.objects.create_superuser(
+        username="admin", email="admin@test.com", password="admin123"
+    )
 
 
 def test_edition_stats_ok_and_group_by_categorie():

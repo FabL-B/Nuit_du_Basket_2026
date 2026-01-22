@@ -4,6 +4,7 @@ from core.models import Edition
 
 pytestmark = pytest.mark.django_db
 
+
 def test_public_editions_active_returns_last():
     client = APIClient()
     Edition.objects.create(nom="NDB 2025", date_evenement="2025-06-20")

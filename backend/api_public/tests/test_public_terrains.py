@@ -5,6 +5,7 @@ from planning.models import Terrain
 
 pytestmark = pytest.mark.django_db
 
+
 def test_public_terrains_default_only_active():
     client = APIClient()
     ed = Edition.objects.create(nom="NDB 2026", date_evenement="2026-06-20")
@@ -16,6 +17,7 @@ def test_public_terrains_default_only_active():
     noms = [x["nom"] for x in r.data]
     assert "T1" in noms
     assert "T2" not in noms
+
 
 def test_public_terrains_actif_false_returns_all():
     client = APIClient()
