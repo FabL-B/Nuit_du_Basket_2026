@@ -1,3 +1,14 @@
 from django.contrib import admin
+from phases.models import PhaseGlobale, SousPhase
 
-# Register your models here.
+
+class PhaseGlobaleAdmin(admin.ModelAdmin):
+    pass
+
+
+class SousPhaseAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(PhaseGlobale, PhaseGlobaleAdmin)
+admin.site.register(SousPhase, SousPhaseAdmin)

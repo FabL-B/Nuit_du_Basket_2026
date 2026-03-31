@@ -1,3 +1,9 @@
 from django.contrib import admin
+from tournois.models import Tournoi
 
-# Register your models here.
+
+class TournoiAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Tournoi, TournoiAdmin)

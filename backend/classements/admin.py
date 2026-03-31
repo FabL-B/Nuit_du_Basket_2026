@@ -1,3 +1,9 @@
 from django.contrib import admin
+from classements.models import Classement
 
-# Register your models here.
+
+class ClassementAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Classement, ClassementAdmin)

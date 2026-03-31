@@ -1,3 +1,9 @@
 from django.contrib import admin
+from core.models import Edition
 
-# Register your models here.
+
+class EditionAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Edition, EditionAdmin)
