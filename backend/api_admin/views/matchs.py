@@ -78,11 +78,18 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
 
         return qs
 
+    def _match_a_equipes_reelles(self, match):
+        return match.equipe_a_id is not None and match.equipe_b_id is not None
+
     @schema_generer_feuille
     @action(detail=True, methods=["post"], url_path="feuille")
     def generer_feuille(self, request, pk=None):
         match = self.get_object()
-
+        if not self._match_a_equipes_reelles(match):
+            return Response(
+                {"detail": "Impossible de générer une feuille pour un match théorique."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         feuille, created = MatchSheet.objects.get_or_create(match=match)
 
         serializer = MatchSheetSerializer(feuille)
@@ -98,7 +105,11 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"], url_path="score")
     def saisir_score(self, request, pk=None):
         match = self.get_object()
-
+        if not self._match_a_equipes_reelles(match):
+            return Response(
+                {"detail": "Impossible de saisir un score pour un match théorique."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = SaisieScoreSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -138,7 +149,11 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"], url_path="score/valider")
     def valider_score(self, request, pk=None):
         match = self.get_object()
-
+        if not self._match_a_equipes_reelles(match):
+            return Response(
+                {"detail": "Impossible de valider un score pour un match théorique."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             score = valider_score(match, request.user)
         except (ErreurScore, ValidationError) as e:
@@ -183,7 +198,11 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"], url_path="forfait")
     def forfait(self, request, pk=None):
         match = self.get_object()
-
+        if not self._match_a_equipes_reelles(match):
+            return Response(
+                {"detail": "Impossible de déclarer un forfait sur un match théorique."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = ForfaitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 

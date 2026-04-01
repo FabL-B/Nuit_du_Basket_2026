@@ -50,12 +50,19 @@ class Match(models.Model):
         "inscriptions.Equipe",
         on_delete=models.PROTECT,
         related_name="matchs_comme_a",
+        null=True,
+        blank=True,
     )
     equipe_b = models.ForeignKey(
         "inscriptions.Equipe",
         on_delete=models.PROTECT,
         related_name="matchs_comme_b",
+        null=True,
+        blank=True,
     )
+
+    libelle_equipe_a = models.CharField(max_length=255, blank=True)
+    libelle_equipe_b = models.CharField(max_length=255, blank=True)
 
     vainqueur = models.ForeignKey(
         "inscriptions.Equipe",
@@ -65,7 +72,6 @@ class Match(models.Model):
         related_name="matchs_gagnes",
     )
 
-    # Planification (nullable au départ)
     creneau = models.ForeignKey(
         "planning.Creneau",
         on_delete=models.SET_NULL,
@@ -101,12 +107,20 @@ class Match(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                condition=~models.Q(equipe_a=models.F("equipe_b")),
-                name="match_equipes_differentes",
+                condition=(
+                    models.Q(equipe_a__isnull=True)
+                    | models.Q(equipe_b__isnull=True)
+                    | ~models.Q(equipe_a=models.F("equipe_b"))
+                ),
+                name="match_equipes_differentes_si_deux_equipes_reelles",
             ),
             models.UniqueConstraint(
                 fields=["groupe", "equipe_a", "equipe_b"],
-                condition=models.Q(groupe__isnull=False),
+                condition=models.Q(
+                    groupe__isnull=False,
+                    equipe_a__isnull=False,
+                    equipe_b__isnull=False,
+                ),
                 name="unique_match_par_groupe_et_paire_ordonne",
             ),
             models.UniqueConstraint(
@@ -116,15 +130,19 @@ class Match(models.Model):
             ),
         ]
 
+    @property
+    def display_equipe_a(self):
+        if self.equipe_a:
+            return self.equipe_a.nom
+        return self.libelle_equipe_a
+
+    @property
+    def display_equipe_b(self):
+        if self.equipe_b:
+            return self.equipe_b.nom
+        return self.libelle_equipe_b
+
     def clean(self) -> None:
-        """
-        Cohérences strictes minimales :
-        - edition cohérente partout
-        - sous_phase cohérente avec phase_globale
-        - groupe cohérent avec sous_phase
-        - équipes cohérentes avec edition + tournoi de la sous_phase
-        (Règle 'équipes du groupe' : contrôlée plus tard côté génération/service)
-        """
         erreurs = {}
 
         if (
@@ -147,7 +165,13 @@ class Match(models.Model):
         ):
             erreurs["groupe"] = "Le groupe n'appartient pas à cette sous-phase."
 
-        # équipes : édition + tournoi
+        # Obligation minimale : chaque côté doit avoir soit une équipe réelle, soit un libellé
+        if not self.equipe_a_id and not self.libelle_equipe_a.strip():
+            erreurs["libelle_equipe_a"] = "Renseigne une équipe A réelle ou un libellé."
+        if not self.equipe_b_id and not self.libelle_equipe_b.strip():
+            erreurs["libelle_equipe_b"] = "Renseigne une équipe B réelle ou un libellé."
+
+        # équipes réelles : cohérence édition + tournoi
         if self.sous_phase_id:
             edition_id = self.sous_phase.phase_globale.edition_id
             tournoi_id = self.sous_phase.tournoi_id
@@ -164,8 +188,14 @@ class Match(models.Model):
                 if self.equipe_b.tournoi_id != tournoi_id:
                     erreurs["equipe_b"] = "L'équipe B n'appartient pas au bon tournoi."
 
-        if self.vainqueur_id and self.vainqueur_id not in {self.equipe_a_id, self.equipe_b_id}:
-            erreurs["vainqueur"] = "Le vainqueur doit être l'équipe A ou B."
+        if self.equipe_a_id and self.equipe_b_id and self.equipe_a_id == self.equipe_b_id:
+            erreurs["equipe_b"] = "L'équipe B doit être différente de l'équipe A."
+
+        if self.vainqueur_id:
+            if self.equipe_a_id is None or self.equipe_b_id is None:
+                erreurs["vainqueur"] = "Impossible de définir un vainqueur sans deux équipes réelles."
+            elif self.vainqueur_id not in {self.equipe_a_id, self.equipe_b_id}:
+                erreurs["vainqueur"] = "Le vainqueur doit être l'équipe A ou B."
 
         if erreurs:
             raise ValidationError(erreurs)

@@ -22,8 +22,8 @@ from groupes.services_phase1 import (
     generer_groupes_phase1_pour_sous_phase,
     ErreurGenerationGroupes,
 )
-from matchs.services_generation import generer_matchs_pour_phase_globale
-from planning.services_planning import generer_planning_phase_globale
+from matchs.services_generation_theorique import generer_matchs_theoriques_phase1
+from planning.services_generation_globale import generer_planning_edition
 
 
 def _mk_admin(username: str, email: str, password: str):
@@ -168,12 +168,12 @@ class Command(BaseCommand):
             generer_groupes_phase1_pour_sous_phase(sp)
         self.stdout.write(self.style.SUCCESS("Groupes phase 1 OK"))
 
-        # 9) Matchs phase 1
-        generer_matchs_pour_phase_globale(phase1)
-        self.stdout.write(self.style.SUCCESS("Matchs phase 1 OK"))
+        # 9) Matchs théoriques phase 1
+        generer_matchs_theoriques_phase1(phase1)
+        self.stdout.write(self.style.SUCCESS("Matchs théoriques phase 1 OK"))
 
-        # 10) Planning phase 1
-        generer_planning_phase_globale(phase1)
-        self.stdout.write(self.style.SUCCESS("Planning phase 1 OK"))
+        # 10) Planning global édition
+        generer_planning_edition(edition)
+        self.stdout.write(self.style.SUCCESS("Planning global édition OK"))
 
         self.stdout.write(self.style.SUCCESS("Seed MVP terminé."))

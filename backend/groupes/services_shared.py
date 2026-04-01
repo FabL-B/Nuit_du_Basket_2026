@@ -10,7 +10,6 @@ from inscriptions.models import Equipe
 class ErreurGenerationGroupes(ValueError):
     pass
 
-
 def _creer_groupes_et_affectations(
     sous_phase: SousPhase,
     equipes: list[Equipe],
@@ -34,8 +33,12 @@ def _creer_groupes_et_affectations(
         g = Groupe.objects.create(sous_phase=sous_phase, code=chr(ord("A") + idx))
         groupes_crees.append(g)
 
-        for _ in range(taille):
-            GroupeEquipe.objects.create(groupe=g, equipe=equipes[index_equipe])
+        for position in range(1, taille + 1):
+            GroupeEquipe.objects.create(
+                groupe=g,
+                equipe=equipes[index_equipe],
+                position_groupe=position,
+            )
             index_equipe += 1
 
     return groupes_crees

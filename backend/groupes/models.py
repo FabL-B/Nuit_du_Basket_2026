@@ -43,16 +43,19 @@ class GroupeEquipe(models.Model):
         related_name="groupes",
     )
 
+    position_groupe = models.PositiveSmallIntegerField()
     seed = models.PositiveSmallIntegerField(null=True, blank=True)
     cree_le = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Équipe du groupe"
-        verbose_name_plural = "Équipes du groupe"
         constraints = [
             models.UniqueConstraint(
                 fields=["groupe", "equipe"],
                 name="unique_equipe_par_groupe",
+            ),
+            models.UniqueConstraint(
+                fields=["groupe", "position_groupe"],
+                name="unique_position_groupe_par_groupe",
             ),
             models.UniqueConstraint(
                 fields=["groupe", "seed"],
